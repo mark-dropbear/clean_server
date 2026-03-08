@@ -38,8 +38,10 @@ The project is organized into layers to separate concerns:
 - **`lib/core/`**: Shared infrastructure logic like logging.
 - **`web/`**: Assets, templates, and frontend source code.
   - `templates/`: SSR Mustache templates (e.g., `home`, `demo`, `contact`).
+    - `partials/`: Reusable template fragments (e.g., `importmap`, `csrf`).
   - `frontend/`: Dedicated npm package for frontend components.
     - `src/`: Source JS/CSS files for Lit components.
+      - `utils.js`: Shared frontend utilities (e.g., `getCsrfToken`).
     - `dist/`: Generated assets and dynamic import map (`importmap.js`).
 
 ## Building and Running
@@ -90,7 +92,7 @@ The project is organized into layers to separate concerns:
 - **Modern Frontend**: Native JS modules and dynamic `ImportMaps` (via shared partial). No heavy build pipeline for production delivery.
 - **Security**: 
   - Mandatory HTML escaping in templates.
-  - CSRF protection via Double Submit Cookie pattern. The `csrfProtection` middleware sets a secure `HttpOnly` cookie and validates an `x-xsrf-token` header. The token is passed to frontend components via template attributes for inclusion in headers.
+  - CSRF protection via Double Submit Cookie pattern. The `csrfProtection` middleware sets a secure `HttpOnly` cookie and validates an `x-xsrf-token` header. The token is passed to frontend components via a centralized `<meta name="csrf-token">` tag (rendered via `csrf` partial).
   - Explicit exception handling (`on Exception catch (e, st)`).
 
 ### Logging Strategy
