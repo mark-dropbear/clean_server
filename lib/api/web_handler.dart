@@ -52,7 +52,10 @@ class WebHandler {
     _logger.info('Rendering contact page');
 
     try {
-      final output = await _renderer.render('contact', {});
+      final csrfToken = request.context['csrfToken'] as String?;
+      final output = await _renderer.render('contact', {
+        'csrfToken': csrfToken,
+      });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {
       _logger.severe('Error rendering contact page', e, st);

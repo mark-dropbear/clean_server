@@ -3,6 +3,7 @@ import componentStyles from './contact-form.css' with { type: 'css' };
 
 export class ContactForm extends LitElement {
   static properties = {
+    csrfToken: { type: String, attribute: 'csrf-token' },
     _isSubmitting: { state: true },
     _success: { state: true },
     _error: { state: true },
@@ -12,6 +13,7 @@ export class ContactForm extends LitElement {
 
   constructor() {
     super();
+    this.csrfToken = '';
     this._isSubmitting = false;
     this._success = false;
     this._error = null;
@@ -89,6 +91,7 @@ export class ContactForm extends LitElement {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-xsrf-token': this.csrfToken,
         },
         body: JSON.stringify(data),
       });

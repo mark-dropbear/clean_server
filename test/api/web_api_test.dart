@@ -51,7 +51,7 @@ void main() {
       final response = await http.get(Uri.parse('$baseUrl/contact'));
       expect(response.statusCode, 200);
       expect(response.body, contains('Contact Us'));
-      expect(response.body, contains('<contact-form></contact-form>'));
+      expect(response.body, contains('<contact-form csrf-token="'));
       expect(response.headers['content-type'], contains('text/html'));
     });
 
