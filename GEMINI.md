@@ -54,12 +54,17 @@ The project is organized into layers to separate concerns:
 - **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
 - **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly, verifying logic and routing without the overhead of a real HTTP server.
 
-### JSON-LD Support
-- **Schema.org Integration**: Entities support JSON-LD serialization via `toJsonLd()` extension methods.
-- **Mapping**:
-  - `TaskList` $\rightarrow$ `https://schema.org/ItemList`
-  - `Task` $\rightarrow$ `https://schema.org/Action`
-- **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
+### Lit Components (Client-Side Rendering)
+- **Modular UI**: The project uses **Lit** for building reusable web components.
+- **Components**:
+  - `<task-item>`: Renders a single task with reactive properties for name, description, and status.
+  - `<task-list>`: A container component that parses JSON-LD from a slotted `<script>` tag and renders a collection of `<task-item>` components.
+- **Location**: Components are located in `web/assets/js/components/`.
+
+### Demo Route
+- **Path**: `/demo`
+- **Purpose**: Showcases the integration of Clean Architecture, JSON-LD, and Lit components.
+- **Implementation**: The `WebHandler.demo` method generates dummy domain data, serializes it using the JSON-LD mapper, and serves a page using the `demo.mustache` template.
 
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.

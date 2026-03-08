@@ -1,0 +1,65 @@
+import { LitElement, html, css } from 'lit';
+
+export class TaskItem extends LitElement {
+  static properties = {
+    name: { type: String },
+    description: { type: String },
+    status: { type: String },
+  };
+
+  static styles = css`
+    :host {
+      display: block;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    strong {
+      font-size: 1.1rem;
+      color: #333;
+    }
+    p {
+      margin: 0.5rem 0;
+      color: #666;
+    }
+    .status {
+      font-size: 0.8rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    .completed { 
+      background-color: #e6fffa;
+      color: #2c7a7b;
+    }
+    .active { 
+      background-color: #ebf8ff;
+      color: #2b6cb0;
+    }
+  `;
+
+  render() {
+    const isCompleted = this.status?.includes('CompletedActionStatus');
+    return html`
+      <div class="task">
+        <div class="task-header">
+          <strong>${this.name}</strong>
+          <span class="status ${isCompleted ? 'completed' : 'active'}">
+            ${isCompleted ? '✓ Completed' : '○ Active'}
+          </span>
+        </div>
+        <p>${this.description}</p>
+      </div>
+    `;
+  }
+}
+customElements.define('task-item', TaskItem);

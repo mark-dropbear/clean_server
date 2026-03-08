@@ -17,6 +17,7 @@ class ApiRouter {
   }) {
     // Web Routes
     _router.get('/', webHandler.home);
+    _router.get('/demo', webHandler.demo);
 
     // Static Assets
     _router.mount('/assets/', createStaticHandler('web/assets'));
