@@ -5,6 +5,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 
 import 'api/api_router.dart';
+import 'api/feedback_handler.dart';
 import 'api/middleware/url_normalization.dart';
 import 'api/task_handler.dart';
 import 'api/task_list_handler.dart';
@@ -34,6 +35,7 @@ class App {
       taskListHandler: getIt<TaskListHandler>(),
       taskHandler: getIt<TaskHandler>(),
       webHandler: getIt<WebHandler>(),
+      feedbackHandler: getIt<FeedbackHandler>(),
     );
 
     // 3. Configure the middleware and handler

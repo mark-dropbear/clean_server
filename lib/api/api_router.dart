@@ -1,6 +1,7 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
+import 'feedback_handler.dart';
 import 'task_handler.dart';
 import 'task_list_handler.dart';
 import 'web_handler.dart';
@@ -14,13 +15,18 @@ class ApiRouter {
     required TaskListHandler taskListHandler,
     required TaskHandler taskHandler,
     required WebHandler webHandler,
+    required FeedbackHandler feedbackHandler,
   }) {
     // Web Routes
     _router.get('/', webHandler.home);
+    _router.get('/contact', webHandler.contact);
     _router.get('/demo', webHandler.demo);
 
     // Static Assets
     _router.mount('/frontend/', createStaticHandler('web/frontend/dist'));
+
+    // Feedback API
+    _router.post('/api/feedback', feedbackHandler.submit);
 
     // Task List Routes
     _router.get('/task-lists', taskListHandler.list);

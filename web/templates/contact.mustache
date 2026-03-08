@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    {{> importmap }}
+    <script type="module">
+        import 'frontend';
+        import 'frontend/pages/contact.js';
+    </script>
+  </head>
+  <body data-js="false">
+    <app-container>
+      <contact-page>
+        <header>
+          <nav>
+            <a href="/">Home</a> | <a href="/demo">Demo</a> | <a href="/contact">Contact</a>
+          </nav>
+        </header>
+
+        <main>
+          <h1>Contact Us</h1>
+          <p>Have questions or feedback? We'd love to hear from you!</p>
+          
+          <contact-form></contact-form>
+        </main>
+
+        <footer>
+          <p>&copy; 2026 Clean Server Project</p>
+        </footer>
+      </contact-page>
+    </app-container>
+  </body>
+</html>

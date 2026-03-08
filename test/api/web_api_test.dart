@@ -46,6 +46,14 @@ void main() {
       expect(response.body, isNot(contains('<script>alert(1)</script>!')));
     });
 
+    test('GET /contact renders contact page', () async {
+      final response = await http.get(Uri.parse('$baseUrl/contact'));
+      expect(response.statusCode, 200);
+      expect(response.body, contains('Contact Us'));
+      expect(response.body, contains('<contact-form></contact-form>'));
+      expect(response.headers['content-type'], contains('text/html'));
+    });
+
     test('GET /frontend/src/index.js returns frontend asset', () async {
       final response = await http.get(
         Uri.parse('$baseUrl/frontend/src/index.js'),

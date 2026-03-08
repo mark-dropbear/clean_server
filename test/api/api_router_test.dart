@@ -1,8 +1,10 @@
 import 'package:clean_server/api/api_router.dart';
+import 'package:clean_server/api/feedback_handler.dart';
 import 'package:clean_server/api/task_handler.dart';
 import 'package:clean_server/api/task_list_handler.dart';
 import 'package:clean_server/api/view_renderer.dart';
 import 'package:clean_server/api/web_handler.dart';
+import 'package:clean_server/data/repositories/in_memory_feedback_repository.dart';
 import 'package:clean_server/data/repositories/in_memory_task_list_repository.dart';
 import 'package:clean_server/data/repositories/in_memory_task_repository.dart';
 import 'package:clean_server/domain/use_cases/create_task.dart';
@@ -12,6 +14,7 @@ import 'package:clean_server/domain/use_cases/delete_task_list.dart';
 import 'package:clean_server/domain/use_cases/get_task.dart';
 import 'package:clean_server/domain/use_cases/get_task_list.dart';
 import 'package:clean_server/domain/use_cases/list_task_lists.dart';
+import 'package:clean_server/domain/use_cases/submit_feedback.dart';
 import 'package:clean_server/domain/use_cases/update_task.dart';
 import 'package:clean_server/domain/use_cases/update_task_list.dart';
 import 'package:shelf/shelf.dart';
@@ -23,6 +26,7 @@ void main() {
   setUp(() {
     final taskListRepo = InMemoryTaskListRepository();
     final taskRepo = InMemoryTaskRepository();
+    final feedbackRepo = InMemoryFeedbackRepository();
     final renderer =
         ViewRenderer(); // We won't test rendering here, just routing
 
@@ -50,10 +54,15 @@ void main() {
 
     final webHandler = WebHandler(renderer);
 
+    final feedbackHandler = FeedbackHandler(
+      submitFeedback: SubmitFeedback(feedbackRepo),
+    );
+
     apiRouter = ApiRouter(
       taskListHandler: taskListHandler,
       taskHandler: taskHandler,
       webHandler: webHandler,
+      feedbackHandler: feedbackHandler,
     );
   });
 
@@ -71,6 +80,18 @@ void main() {
       );
       final response = await apiRouter.call(request);
       expect(response.statusCode, equals(404));
+    });
+
+    test('POST /api/feedback should be routed to FeedbackHandler.submit', () async {
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/api/feedback'),
+        body:
+            '{"name": "a", "email": "b", "message": "c"}', // invalid data but routed
+      );
+      final response = await apiRouter.call(request);
+      // It will return 400 because data is invalid, but it means it reached the handler
+      expect(response.statusCode, equals(400));
     });
   });
 }

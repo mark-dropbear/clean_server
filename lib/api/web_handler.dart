@@ -47,6 +47,19 @@ class WebHandler {
     }
   }
 
+  /// Renders the contact page.
+  Future<Response> contact(Request request) async {
+    _logger.info('Rendering contact page');
+
+    try {
+      final output = await _renderer.render('contact', {});
+      return Response.ok(output, headers: {'Content-Type': 'text/html'});
+    } on Exception catch (e, st) {
+      _logger.severe('Error rendering contact page', e, st);
+      return Response.internalServerError(body: 'Error: $e');
+    }
+  }
+
   /// Renders a demo page with Lit components and dummy JSON-LD data.
   Future<Response> demo(Request request) async {
     _logger.info('Rendering demo page');

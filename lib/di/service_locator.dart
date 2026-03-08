@@ -1,10 +1,13 @@
 import 'package:get_it/get_it.dart';
+import '../api/feedback_handler.dart';
 import '../api/task_handler.dart';
 import '../api/task_list_handler.dart';
 import '../api/view_renderer.dart';
 import '../api/web_handler.dart';
+import '../data/repositories/in_memory_feedback_repository.dart';
 import '../data/repositories/in_memory_task_list_repository.dart';
 import '../data/repositories/in_memory_task_repository.dart';
+import '../domain/repositories/feedback_repository.dart';
 import '../domain/repositories/task_list_repository.dart';
 import '../domain/repositories/task_repository.dart';
 import '../domain/use_cases/create_task.dart';
@@ -15,6 +18,7 @@ import '../domain/use_cases/get_task.dart';
 import '../domain/use_cases/get_task_list.dart';
 import '../domain/use_cases/list_task_lists.dart';
 import '../domain/use_cases/list_tasks.dart';
+import '../domain/use_cases/submit_feedback.dart';
 import '../domain/use_cases/update_task.dart';
 import '../domain/use_cases/update_task_list.dart';
 
@@ -30,6 +34,9 @@ void setupLocator() {
   getIt.registerLazySingleton<TaskRepository>(InMemoryTaskRepository.new);
   getIt.registerLazySingleton<TaskListRepository>(
     InMemoryTaskListRepository.new,
+  );
+  getIt.registerLazySingleton<FeedbackRepository>(
+    InMemoryFeedbackRepository.new,
   );
 
   // Task Use Cases
@@ -60,6 +67,11 @@ void setupLocator() {
     ),
   );
 
+  // Feedback Use Cases
+  getIt.registerLazySingleton(
+    () => SubmitFeedback(getIt<FeedbackRepository>()),
+  );
+
   // Handlers
   getIt.registerLazySingleton(
     () => TaskHandler(
@@ -82,4 +94,8 @@ void setupLocator() {
   );
 
   getIt.registerLazySingleton(() => WebHandler(getIt<ViewRenderer>()));
+
+  getIt.registerLazySingleton(
+    () => FeedbackHandler(submitFeedback: getIt<SubmitFeedback>()),
+  );
 }
