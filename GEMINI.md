@@ -40,10 +40,19 @@ The project is organized into layers to separate concerns:
   - Use `--verbose` or `-v` to set the log level to `ALL` (includes request logs and database access).
   - Default log level is `INFO`.
 - **Run Tests**: `dart test`
+  - To generate a coverage report: `dart test --coverage=coverage/`
 - **Static Analysis**: `dart analyze`
 - **Format Code**: `dart format .`
 
 ## Development Conventions
+
+### Testing Strategy
+- **Layered Coverage**: The project maintains comprehensive test coverage across all Clean Architecture layers:
+  - **Domain**: Unit tests for entities (`test/domain/entities/`) and use cases (`test/domain/use_cases/`).
+  - **Data**: Unit tests for mappers (`test/data/mappers/`) and repository implementations (`test/data/repositories/`).
+  - **API**: Integration-style unit tests for handlers (`test/api/`) and the central router.
+- **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
+- **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly, verifying logic and routing without the overhead of a real HTTP server.
 
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
