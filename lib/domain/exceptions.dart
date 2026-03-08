@@ -16,6 +16,12 @@ class InvalidTaskException extends DomainException {
   InvalidTaskException(super.message);
 }
 
+/// Thrown when feedback form data is invalid.
+class InvalidFeedbackException extends DomainException {
+  /// Creates a new [InvalidFeedbackException].
+  InvalidFeedbackException(super.message);
+}
+
 /// Thrown when a task cannot be found.
 class TaskNotFoundException extends DomainException {
   /// Creates a new [TaskNotFoundException].
@@ -26,4 +32,10 @@ class TaskNotFoundException extends DomainException {
 class TaskListNotFoundException extends DomainException {
   /// Creates a new [TaskListNotFoundException].
   TaskListNotFoundException(String id) : super('Task list not found: $id');
+}
+
+/// Thrown when feedback cannot be found.
+class FeedbackNotFoundException extends DomainException {
+  /// Creates a new [FeedbackNotFoundException].
+  FeedbackNotFoundException(String id) : super('Feedback not found: $id');
 }
