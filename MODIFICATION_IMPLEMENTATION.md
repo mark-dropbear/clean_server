@@ -12,6 +12,7 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
 | 2026-03-08 | Phase 3 | Implemented data layer mappers and in-memory repository. Added unit tests. |
 | 2026-03-08 | Phase 4 | Implemented presentation layer handler. Added unit tests. |
 | 2026-03-08 | Phase 5 | Modified CSRF middleware to exclude reporting paths. Wired up dependencies in service locator and router. Added integration tests. |
+| 2026-03-08 | Phase 6 | Updated README.md and GEMINI.md. Final test run passed. Manually verified with curl request. Removed manual test trigger from frontend. |
 
 ## Phases
 
@@ -73,10 +74,10 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
   - [x] Update Journal and commit changes.
 
 ### Phase 6: Finalization
-- [ ] Update `README.md` if necessary with information about the Reporting API.
-- [ ] Update `GEMINI.md` to reflect the new feature and project structure.
-- [ ] Run all tests one last time.
-- [ ] Ask the user to inspect the implementation and verify satisfaction.
+- [x] Update `README.md` if necessary with information about the Reporting API.
+- [x] Update `GEMINI.md` to reflect the new feature and project structure.
+- [x] Run all tests one last time.
+- [x] Ask the user to inspect the implementation and verify satisfaction.
 
 ---
 

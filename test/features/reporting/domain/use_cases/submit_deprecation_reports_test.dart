@@ -1,34 +1,14 @@
-import 'package:clean_server/features/reporting/domain/entities/report.dart';
-import 'package:clean_server/features/reporting/domain/repositories/report_repository.dart';
+import 'package:clean_server/features/reporting/data/repositories/in_memory_report_repository.dart';
 import 'package:clean_server/features/reporting/domain/use_cases/submit_deprecation_reports.dart';
 import 'package:test/test.dart';
 
-class FakeReportRepository implements ReportRepository {
-  final List<Report> savedReports = [];
-
-  @override
-  Future<void> save(Report report) async {
-    savedReports.add(report);
-  }
-
-  @override
-  Future<List<T>> listByType<T extends Report>(String type) async {
-    return savedReports.whereType<T>().toList();
-  }
-
-  @override
-  Future<List<Report>> listAll() async {
-    return savedReports;
-  }
-}
-
 void main() {
   group('SubmitDeprecationReports', () {
-    late FakeReportRepository repository;
+    late InMemoryReportRepository repository;
     late SubmitDeprecationReports useCase;
 
     setUp(() {
-      repository = FakeReportRepository();
+      repository = InMemoryReportRepository();
       useCase = SubmitDeprecationReports(repository);
     });
 
@@ -37,15 +17,15 @@ void main() {
         {
           'type': 'deprecation',
           'age': 420,
-          'url': 'https://example.com/',
+          'url': 'http://localhost:8080/',
           'user_agent': 'Mozilla/5.0...',
           'body': {
-            'id': 'NavigatorGetUserMedia',
-            'anticipatedRemoval': '2023-12-31T23:59:59Z',
-            'message': 'Use MediaDevices.getUserMedia instead',
-            'sourceFile': 'app.js',
-            'lineNumber': 10,
-            'columnNumber': 40,
+            'columnNumber': 976,
+            'id': 'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+            'lineNumber': 1,
+            'message':
+                'Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user\'s experience. For more help, check https://xhr.spec.whatwg.org/.',
+            'sourceFile': 'http://localhost:8080/frontend/src/index.js',
           },
         },
         {
@@ -59,11 +39,20 @@ void main() {
       final results = await useCase.execute(reports);
 
       expect(results.length, 1);
-      expect(results.first.featureId, 'NavigatorGetUserMedia');
-      expect(results.first.sourceFile, 'app.js');
-      expect(results.first.anticipatedRemoval, isNotNull);
-      expect(repository.savedReports.length, 1);
-      expect(repository.savedReports.first, equals(results.first));
+      expect(
+        results.first.featureId,
+        'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+      );
+      expect(
+        results.first.sourceFile,
+        'http://localhost:8080/frontend/src/index.js',
+      );
+      expect(results.first.columnNumber, 976);
+      expect(results.first.lineNumber, 1);
+
+      final saved = await repository.listAll();
+      expect(saved.length, 1);
+      expect(saved.first, equals(results.first));
     });
 
     test('should handle empty or missing body fields gracefully', () async {

@@ -8,15 +8,15 @@ void main() {
       final now = DateTime.now().toUtc();
       final report = DeprecationReport(
         id: '123',
-        url: 'https://example.com',
+        url: 'http://localhost:8080/',
         age: 100,
         receivedAt: now,
-        featureId: 'legacy-feature',
-        message: 'This feature is deprecated',
-        sourceFile: 'app.js',
-        lineNumber: 10,
-        columnNumber: 5,
-        anticipatedRemoval: now.add(const Duration(days: 30)),
+        featureId: 'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+        message:
+            'Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user\'s experience. For more help, check https://xhr.spec.whatwg.org/.',
+        sourceFile: 'http://localhost:8080/frontend/src/index.js',
+        lineNumber: 1,
+        columnNumber: 976,
       );
 
       final map = report.toMap();
@@ -25,7 +25,11 @@ void main() {
       expect(fromMap, equals(report));
       expect(fromMap.id, '123');
       expect(fromMap.receivedAt, now);
-      expect(fromMap.anticipatedRemoval, isNotNull);
+      expect(
+        fromMap.featureId,
+        'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+      );
+      expect(fromMap.columnNumber, 976);
     });
 
     test('should handle nullable fields in mapping', () {

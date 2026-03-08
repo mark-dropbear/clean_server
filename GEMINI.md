@@ -1,7 +1,7 @@
 # GEMINI.md - Project Context for `clean_server`
 
 ## Project Overview
-`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles within a **Feature-First** structure to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation with built-in CSRF protection.
+`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles within a **Feature-First** structure to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation with built-in CSRF protection and an implementation of the official web platform **Reporting API** for receiving browser reports.
 
 ### Main Technologies
 - **Language**: Dart (SDK ^3.11.0)
@@ -26,7 +26,11 @@ The project is organized using a **Feature-First** approach with layered concern
     - `logging.dart`: Logger configuration.
     - `view_renderer.dart`: Centralized template/partial resolution and rendering.
     - **`lib/core/middleware/`**: Shared middleware logic (CSRF, URL normalization).
-  - **`lib/features/`**: Business functionality grouped by feature.
+    - **`lib/features/`**: Business functionality grouped by feature.
+    - **`reporting/`**: Logic for browser reporting via the official Reporting API.
+      - `domain/`: `Report` and `DeprecationReport` entities, Use Case, and Repository interface.
+      - `data/`: In-memory Repository and Mapper.
+      - `presentation/`: `ReportHandler`.
     - **`tasks/`**: Logic for managing tasks and task lists.
       - `domain/`: Entities (`task.dart`, `task_list.dart`), Use Cases, and Repository interfaces.
       - `data/`: In-memory Repositories and Mappers.
