@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import '../data/mappers/task_list_mapper.dart';
 import '../domain/exceptions.dart';
@@ -10,6 +11,7 @@ import '../domain/use_cases/update_task_list.dart';
 
 /// Handler for task list related endpoints.
 class TaskListHandler {
+  static final _logger = Logger('TaskListHandler');
   final CreateTaskList _createTaskList;
   final GetTaskList _getTaskList;
   final ListTaskLists _listTaskLists;
@@ -31,6 +33,7 @@ class TaskListHandler {
 
   /// Lists all task lists.
   Future<Response> list(Request request) async {
+    _logger.fine('Listing all task lists');
     final lists = await _listTaskLists.execute();
     final json = lists.map((l) => l.toMap()).toList();
     return Response.ok(
@@ -41,9 +44,11 @@ class TaskListHandler {
 
   /// Gets a specific task list by ID.
   Future<Response> get(Request request, String taskListId) async {
+    _logger.fine('Getting task list: $taskListId');
     try {
       final list = await _getTaskList.execute(taskListId);
       if (list == null) {
+        _logger.warning('Task list not found: $taskListId');
         return Response.notFound(
           jsonEncode({'error': 'Task list not found: $taskListId'}),
         );
@@ -53,8 +58,10 @@ class TaskListHandler {
         headers: {'Content-Type': 'application/json'},
       );
     } on TaskListNotFoundException catch (e) {
+      _logger.warning('Task list not found: $taskListId');
       return Response.notFound(jsonEncode({'error': e.message}));
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
+      _logger.severe('Error getting task list: $taskListId', e, st);
       return Response.internalServerError(
         body: jsonEncode({'error': e.toString()}),
         headers: {'Content-Type': 'application/json'},
@@ -67,9 +74,11 @@ class TaskListHandler {
     try {
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
+      final title = data['title'] as String;
 
+      _logger.info('Creating task list: $title');
       final list = await _createTaskList.execute(
-        title: data['title'] as String,
+        title: title,
         description: (data['description'] as String?) ?? '',
       );
 
@@ -79,8 +88,10 @@ class TaskListHandler {
         headers: {'Content-Type': 'application/json'},
       );
     } on InvalidTaskException catch (e) {
+      _logger.warning('Invalid task list data', e);
       return Response.badRequest(body: jsonEncode({'error': e.message}));
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
+      _logger.severe('Error creating task list', e, st);
       return Response.internalServerError(
         body: jsonEncode({'error': e.toString()}),
         headers: {'Content-Type': 'application/json'},
@@ -94,6 +105,7 @@ class TaskListHandler {
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
+      _logger.info('Updating task list: $taskListId');
       final list = await _updateTaskList.execute(
         taskListId,
         title: data['title'] as String?,
@@ -105,10 +117,13 @@ class TaskListHandler {
         headers: {'Content-Type': 'application/json'},
       );
     } on TaskListNotFoundException catch (e) {
+      _logger.warning('Task list not found for update: $taskListId');
       return Response.notFound(jsonEncode({'error': e.message}));
     } on InvalidTaskException catch (e) {
+      _logger.warning('Invalid update data for task list: $taskListId', e);
       return Response.badRequest(body: jsonEncode({'error': e.message}));
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
+      _logger.severe('Error updating task list: $taskListId', e, st);
       return Response.internalServerError(
         body: jsonEncode({'error': e.toString()}),
         headers: {'Content-Type': 'application/json'},
@@ -118,12 +133,15 @@ class TaskListHandler {
 
   /// Deletes a task list.
   Future<Response> delete(Request request, String taskListId) async {
+    _logger.info('Deleting task list: $taskListId');
     try {
       await _deleteTaskList.execute(taskListId);
       return Response(204);
     } on TaskListNotFoundException catch (e) {
+      _logger.warning('Task list not found for deletion: $taskListId');
       return Response.notFound(jsonEncode({'error': e.message}));
-    } on Exception catch (e) {
+    } on Exception catch (e, st) {
+      _logger.severe('Error deleting task list: $taskListId', e, st);
       return Response.internalServerError(
         body: jsonEncode({'error': e.toString()}),
         headers: {'Content-Type': 'application/json'},

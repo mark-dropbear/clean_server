@@ -1,8 +1,11 @@
-import 'dart:developer' as developer;
 import 'package:args/args.dart';
 import 'package:clean_server/app.dart';
+import 'package:clean_server/core/logging.dart';
+import 'package:logging/logging.dart';
 
 const String version = '0.0.1';
+
+final _logger = Logger('CLI');
 
 /// Builds the argument parser for the CLI.
 ArgParser buildParser() {
@@ -30,8 +33,8 @@ ArgParser buildParser() {
 
 /// Prints the usage information.
 void printUsage(ArgParser argParser) {
-  developer.log('Usage: dart clean_server.dart [arguments]');
-  developer.log(argParser.usage);
+  _logger.info('Usage: dart clean_server.dart [arguments]');
+  _logger.info(argParser.usage);
 }
 
 /// The main entry point for the CLI.
@@ -40,24 +43,25 @@ void main(List<String> arguments) async {
   try {
     final results = argParser.parse(arguments);
 
+    final verbose = results.flag('verbose');
+    initLogging(verbose: verbose);
+
     // Process the parsed arguments.
     if (results.flag('help')) {
       printUsage(argParser);
       return;
     }
     if (results.flag('version')) {
-      developer.log('clean_server version: $version');
+      _logger.info('clean_server version: $version');
       return;
     }
 
     final port = int.tryParse(results['port'] as String) ?? 8080;
-    final verbose = results.flag('verbose');
 
     final app = App(port: port, verbose: verbose);
     await app.run();
   } on FormatException catch (e) {
-    developer.log(e.message);
-    developer.log('');
+    _logger.severe(e.message);
     printUsage(argParser);
   }
 }

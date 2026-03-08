@@ -1,4 +1,7 @@
+import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
+
+final _logger = Logger('URLNormalization');
 
 /// Middleware that removes trailing slashes from the request URL.
 ///
@@ -20,6 +23,10 @@ Middleware stripTrailingSlash() {
 
         final newRequestedUri = request.requestedUri.replace(
           path: newRequestedPath,
+        );
+
+        _logger.fine(
+          'Normalizing URL: ${request.requestedUri.path} -> $newRequestedPath',
         );
 
         // We create a new Request object to normalize the URL while
