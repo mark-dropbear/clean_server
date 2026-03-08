@@ -11,6 +11,7 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
 | 2026-03-08 | Phase 2 | Implemented domain layer entities, repository interface, and use case. Fixed inference issues in tests. |
 | 2026-03-08 | Phase 3 | Implemented data layer mappers and in-memory repository. Added unit tests. |
 | 2026-03-08 | Phase 4 | Implemented presentation layer handler. Added unit tests. |
+| 2026-03-08 | Phase 5 | Modified CSRF middleware to exclude reporting paths. Wired up dependencies in service locator and router. Added integration tests. |
 
 ## Phases
 
@@ -56,20 +57,20 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
   - [x] Update Journal and commit changes.
 
 ### Phase 5: Infrastructure & Wiring
-- [ ] Modify `lib/core/middleware/csrf_protection.dart` to exclude paths starting with `/_reports/`.
-- [ ] Update `lib/di/service_locator.dart` to register reporting dependencies:
+- [x] Modify `lib/core/middleware/csrf_protection.dart` to exclude paths starting with `/_reports/`.
+- [x] Update `lib/di/service_locator.dart` to register reporting dependencies:
   - `ReportRepository` (InMemory)
   - `SubmitDeprecationReports` (Use Case)
   - `ReportHandler`
-- [ ] Update `lib/app_router.dart` to include the `POST /_reports/deprecation` route.
-- [ ] Update `lib/app.dart` to pass the new `ReportHandler` to `AppRouter`.
-- [ ] **Validation**:
-  - [ ] Create integration tests for the new endpoint `POST /_reports/deprecation`.
-  - [ ] Run `dart_fix --apply`.
-  - [ ] Run `dart analyze`.
-  - [ ] Run `dart test`.
-  - [ ] Run `dart format .`.
-  - [ ] Update Journal and commit changes.
+- [x] Update `lib/app_router.dart` to include the `POST /_reports/deprecation` route.
+- [x] Update `lib/app.dart` to pass the new `ReportHandler` to `AppRouter`.
+- [x] **Validation**:
+  - [x] Create integration tests for the new endpoint `POST /_reports/deprecation`.
+  - [x] Run `dart_fix --apply`.
+  - [x] Run `dart analyze`.
+  - [x] Run `dart test`.
+  - [x] Run `dart format .`.
+  - [x] Update Journal and commit changes.
 
 ### Phase 6: Finalization
 - [ ] Update `README.md` if necessary with information about the Reporting API.

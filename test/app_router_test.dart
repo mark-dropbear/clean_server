@@ -4,6 +4,9 @@ import 'package:clean_server/features/feedback/data/repositories/in_memory_feedb
 import 'package:clean_server/features/feedback/domain/use_cases/submit_feedback.dart';
 import 'package:clean_server/features/feedback/presentation/handlers/feedback_handler.dart';
 import 'package:clean_server/features/pages/presentation/handlers/web_handler.dart';
+import 'package:clean_server/features/reporting/data/repositories/in_memory_report_repository.dart';
+import 'package:clean_server/features/reporting/domain/use_cases/submit_deprecation_reports.dart';
+import 'package:clean_server/features/reporting/presentation/handlers/report_handler.dart';
 import 'package:clean_server/features/tasks/data/repositories/in_memory_task_list_repository.dart';
 import 'package:clean_server/features/tasks/data/repositories/in_memory_task_repository.dart';
 import 'package:clean_server/features/tasks/domain/use_cases/create_task.dart';
@@ -27,6 +30,7 @@ void main() {
     final taskListRepo = InMemoryTaskListRepository();
     final taskRepo = InMemoryTaskRepository();
     final feedbackRepo = InMemoryFeedbackRepository();
+    final reportRepo = InMemoryReportRepository();
     final renderer =
         ViewRenderer(); // We won't test rendering here, just routing
 
@@ -58,11 +62,16 @@ void main() {
       submitFeedback: SubmitFeedback(feedbackRepo),
     );
 
+    final reportHandler = ReportHandler(
+      submitDeprecationReports: SubmitDeprecationReports(reportRepo),
+    );
+
     appRouter = AppRouter(
       taskListHandler: taskListHandler,
       taskHandler: taskHandler,
       webHandler: webHandler,
       feedbackHandler: feedbackHandler,
+      reportHandler: reportHandler,
     );
   });
 

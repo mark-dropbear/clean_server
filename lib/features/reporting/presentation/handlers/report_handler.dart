@@ -55,9 +55,9 @@ class ReportHandler {
         body: jsonEncode({'error': e.toString()}),
         headers: {'Content-Type': 'application/json'},
       );
-    } catch (e) {
+    } on Object catch (e) {
       return Response.internalServerError(
-        body: jsonEncode({'error': 'An unknown error occurred'}),
+        body: jsonEncode({'error': 'An unknown error occurred: $e'}),
         headers: {'Content-Type': 'application/json'},
       );
     }

@@ -6,6 +6,10 @@ import '../features/feedback/domain/repositories/feedback_repository.dart';
 import '../features/feedback/domain/use_cases/submit_feedback.dart';
 import '../features/feedback/presentation/handlers/feedback_handler.dart';
 import '../features/pages/presentation/handlers/web_handler.dart';
+import '../features/reporting/data/repositories/in_memory_report_repository.dart';
+import '../features/reporting/domain/repositories/report_repository.dart';
+import '../features/reporting/domain/use_cases/submit_deprecation_reports.dart';
+import '../features/reporting/presentation/handlers/report_handler.dart';
 import '../features/tasks/data/repositories/in_memory_task_list_repository.dart';
 import '../features/tasks/data/repositories/in_memory_task_repository.dart';
 import '../features/tasks/domain/repositories/task_list_repository.dart';
@@ -39,6 +43,7 @@ void setupLocator() {
   getIt.registerLazySingleton<FeedbackRepository>(
     InMemoryFeedbackRepository.new,
   );
+  getIt.registerLazySingleton<ReportRepository>(InMemoryReportRepository.new);
 
   // Task Use Cases
   getIt.registerLazySingleton(() => CreateTask(getIt<TaskRepository>()));
@@ -73,6 +78,11 @@ void setupLocator() {
     () => SubmitFeedback(getIt<FeedbackRepository>()),
   );
 
+  // Reporting Use Cases
+  getIt.registerLazySingleton(
+    () => SubmitDeprecationReports(getIt<ReportRepository>()),
+  );
+
   // Handlers
   getIt.registerLazySingleton(
     () => TaskHandler(
@@ -101,5 +111,11 @@ void setupLocator() {
 
   getIt.registerLazySingleton(
     () => FeedbackHandler(submitFeedback: getIt<SubmitFeedback>()),
+  );
+
+  getIt.registerLazySingleton(
+    () => ReportHandler(
+      submitDeprecationReports: getIt<SubmitDeprecationReports>(),
+    ),
   );
 }

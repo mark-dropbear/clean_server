@@ -22,7 +22,9 @@ Middleware csrfProtection() {
 
       // 2. Validate state-changing requests
       const stateChangingMethods = {'POST', 'PUT', 'DELETE', 'PATCH'};
-      if (stateChangingMethods.contains(request.method)) {
+      final isReportingPath = request.url.path.startsWith('_reports/');
+
+      if (stateChangingMethods.contains(request.method) && !isReportingPath) {
         final csrfHeader = request.headers['x-xsrf-token'];
 
         if (csrfCookie == null ||

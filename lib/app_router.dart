@@ -4,6 +4,7 @@ import 'package:shelf_static/shelf_static.dart';
 
 import 'features/feedback/presentation/handlers/feedback_handler.dart';
 import 'features/pages/presentation/handlers/web_handler.dart';
+import 'features/reporting/presentation/handlers/report_handler.dart';
 import 'features/tasks/presentation/handlers/task_handler.dart';
 import 'features/tasks/presentation/handlers/task_list_handler.dart';
 
@@ -17,6 +18,7 @@ class AppRouter {
     required TaskHandler taskHandler,
     required WebHandler webHandler,
     required FeedbackHandler feedbackHandler,
+    required ReportHandler reportHandler,
   }) {
     // Web Routes
     _router.get('/', webHandler.home);
@@ -28,6 +30,9 @@ class AppRouter {
 
     // Feedback API
     _router.post('/api/feedback', feedbackHandler.submit);
+
+    // Reporting API
+    _router.post('/_reports/deprecation', reportHandler.handleDeprecation);
 
     // Task List Routes
     _router.get('/task-lists', taskListHandler.list);

@@ -10,6 +10,7 @@ import 'core/middleware/url_normalization.dart';
 import 'di/service_locator.dart';
 import 'features/feedback/presentation/handlers/feedback_handler.dart';
 import 'features/pages/presentation/handlers/web_handler.dart';
+import 'features/reporting/presentation/handlers/report_handler.dart';
 import 'features/tasks/presentation/handlers/task_handler.dart';
 import 'features/tasks/presentation/handlers/task_list_handler.dart';
 
@@ -37,6 +38,7 @@ class App {
       taskHandler: getIt<TaskHandler>(),
       webHandler: getIt<WebHandler>(),
       feedbackHandler: getIt<FeedbackHandler>(),
+      reportHandler: getIt<ReportHandler>(),
     );
 
     // 3. Configure the middleware and handler
