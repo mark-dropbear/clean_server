@@ -1,13 +1,23 @@
+import 'package:meta/meta.dart';
 import '../exceptions.dart';
 import 'task.dart';
 
 /// Represents a list of tasks.
+@immutable
 class TaskList {
+  /// The unique identifier for the task list.
   final String id;
+
+  /// The title of the task list.
   final String title;
+
+  /// A detailed description of the task list.
   final String description;
+
+  /// The collection of tasks within this list.
   final List<Task> tasks;
 
+  /// Creates a new [TaskList] instance.
   TaskList({
     required this.id,
     required this.title,
@@ -26,6 +36,7 @@ class TaskList {
     }
   }
 
+  /// Creates a copy of the task list with updated fields.
   TaskList copyWith({String? title, String? description, List<Task>? tasks}) {
     return TaskList(
       id: id,

@@ -1,16 +1,16 @@
 import '../entities/task.dart';
 import '../repositories/task_repository.dart';
-import '../exceptions.dart';
 
+/// Use case for retrieving a specific task.
 class GetTask {
-  final TaskRepository repository;
-  GetTask(this.repository);
+  /// The repository for tasks.
+  final TaskRepository taskRepository;
 
-  Future<Task> execute(String id) async {
-    final task = await repository.get(id);
-    if (task == null) {
-      throw TaskNotFoundException(id);
-    }
-    return task;
+  /// Creates a [GetTask] use case.
+  GetTask(this.taskRepository);
+
+  /// Executes the use case.
+  Future<Task?> execute(String id) {
+    return taskRepository.getById(id);
   }
 }

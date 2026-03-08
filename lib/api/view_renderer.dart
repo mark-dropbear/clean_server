@@ -3,11 +3,16 @@ import 'package:mustache_template/mustache_template.dart';
 
 /// A service that handles loading and rendering of view templates.
 class ViewRenderer {
+  /// The directory containing the main templates.
   final String templateDir;
+
+  /// The directory containing partial templates.
   final String partialsDir;
+
   final Map<String, Template> _partials = {};
   bool _initialized = false;
 
+  /// Creates a [ViewRenderer].
   ViewRenderer({
     this.templateDir = 'web/templates',
     this.partialsDir = 'web/templates/partials',
@@ -45,7 +50,6 @@ class ViewRenderer {
     final template = Template(
       source,
       name: '$templateName.mustache',
-      htmlEscapeValues: true,
       partialResolver: (name) => _partials[name],
     );
 

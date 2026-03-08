@@ -1,6 +1,6 @@
-import 'package:test/test.dart';
-import 'package:clean_server/domain/use_cases/create_task.dart';
 import 'package:clean_server/data/repositories/in_memory_task_repository.dart';
+import 'package:clean_server/domain/use_cases/create_task.dart';
+import 'package:test/test.dart';
 
 void main() {
   late InMemoryTaskRepository repository;
@@ -24,8 +24,9 @@ void main() {
       expect(task.description, 'New Description');
       expect(task.id, isNotEmpty);
 
-      final saved = await repository.get(task.id);
-      expect(saved, equals(task));
+      final savedTask = await repository.getById(task.id);
+
+      expect(savedTask, equals(task));
     });
   });
 }

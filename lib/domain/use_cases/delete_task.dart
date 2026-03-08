@@ -1,15 +1,15 @@
 import '../repositories/task_repository.dart';
-import '../exceptions.dart';
 
+/// Use case for deleting a task.
 class DeleteTask {
-  final TaskRepository repository;
-  DeleteTask(this.repository);
+  /// The repository for tasks.
+  final TaskRepository taskRepository;
 
-  Future<void> execute(String id) async {
-    final existing = await repository.get(id);
-    if (existing == null) {
-      throw TaskNotFoundException(id);
-    }
-    await repository.delete(id);
+  /// Creates a [DeleteTask] use case.
+  DeleteTask(this.taskRepository);
+
+  /// Executes the use case.
+  Future<void> execute(String id) {
+    return taskRepository.delete(id);
   }
 }

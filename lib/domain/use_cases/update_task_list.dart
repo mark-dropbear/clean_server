@@ -1,23 +1,31 @@
 import '../entities/task_list.dart';
-import '../repositories/task_list_repository.dart';
 import '../exceptions.dart';
+import '../repositories/task_list_repository.dart';
 
+/// Use case for updating an existing task list.
 class UpdateTaskList {
-  final TaskListRepository repository;
-  UpdateTaskList(this.repository);
+  /// The repository for task lists.
+  final TaskListRepository taskListRepository;
 
+  /// Creates an [UpdateTaskList] use case.
+  UpdateTaskList(this.taskListRepository);
+
+  /// Executes the use case.
+  ///
+  /// Throws [TaskListNotFoundException] if the list doesn't exist.
   Future<TaskList> execute(
     String id, {
     String? title,
     String? description,
   }) async {
-    final existing = await repository.get(id);
-    if (existing == null) {
+    final list = await taskListRepository.getById(id);
+    if (list == null) {
       throw TaskListNotFoundException(id);
     }
 
-    final updated = existing.copyWith(title: title, description: description);
+    final updatedList = list.copyWith(title: title, description: description);
 
-    return await repository.update(updated);
+    await taskListRepository.update(updatedList);
+    return updatedList;
   }
 }

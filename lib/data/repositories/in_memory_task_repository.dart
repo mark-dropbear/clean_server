@@ -1,15 +1,13 @@
 import '../../domain/entities/task.dart';
 import '../../domain/repositories/task_repository.dart';
 
-/// An in-memory implementation of the TaskRepository.
-/// This is perfect for development and unit testing.
+/// An in-memory implementation of the [TaskRepository].
 class InMemoryTaskRepository implements TaskRepository {
   final Map<String, Task> _tasks = {};
 
   @override
-  Future<Task> create(Task task) async {
+  Future<void> save(Task task) async {
     _tasks[task.id] = task;
-    return task;
   }
 
   @override
@@ -23,7 +21,7 @@ class InMemoryTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<Task?> get(String id) async {
+  Future<Task?> getById(String id) async {
     return _tasks[id];
   }
 
@@ -33,15 +31,14 @@ class InMemoryTaskRepository implements TaskRepository {
   }
 
   @override
-  Future<List<Task>> listByTaskListId(String taskListId) async {
+  Future<List<Task>> getByTaskListId(String taskListId) async {
     return _tasks.values
         .where((task) => task.taskListId == taskListId)
         .toList();
   }
 
   @override
-  Future<Task> update(Task task) async {
+  Future<void> update(Task task) async {
     _tasks[task.id] = task;
-    return task;
   }
 }

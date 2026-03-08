@@ -1,14 +1,26 @@
+import 'package:meta/meta.dart';
 import '../exceptions.dart';
 
 /// Represents a task in our system.
 /// This is a pure domain entity, agnostic of any serialization or persistence mechanism.
+@immutable
 class Task {
+  /// The unique identifier for the task.
   final String id;
+
+  /// The unique identifier for the task list this task belongs to.
   final String taskListId;
+
+  /// The title of the task.
   final String title;
+
+  /// A detailed description of the task.
   final String description;
+
+  /// Whether the task is completed.
   final bool isCompleted;
 
+  /// Creates a new [Task] instance.
   Task({
     required this.id,
     required this.taskListId,

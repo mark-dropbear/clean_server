@@ -1,33 +1,35 @@
 import 'package:get_it/get_it.dart';
-import '../domain/repositories/task_repository.dart';
-import '../domain/repositories/task_list_repository.dart';
-import '../data/repositories/in_memory_task_repository.dart';
-import '../data/repositories/in_memory_task_list_repository.dart';
-import '../domain/use_cases/create_task.dart';
-import '../domain/use_cases/get_task.dart';
-import '../domain/use_cases/list_tasks.dart';
-import '../domain/use_cases/update_task.dart';
-import '../domain/use_cases/delete_task.dart';
-import '../domain/use_cases/create_task_list.dart';
-import '../domain/use_cases/get_task_list.dart';
-import '../domain/use_cases/list_task_lists.dart';
-import '../domain/use_cases/update_task_list.dart';
-import '../domain/use_cases/delete_task_list.dart';
 import '../api/task_handler.dart';
 import '../api/task_list_handler.dart';
-import '../api/web_handler.dart';
 import '../api/view_renderer.dart';
+import '../api/web_handler.dart';
+import '../data/repositories/in_memory_task_list_repository.dart';
+import '../data/repositories/in_memory_task_repository.dart';
+import '../domain/repositories/task_list_repository.dart';
+import '../domain/repositories/task_repository.dart';
+import '../domain/use_cases/create_task.dart';
+import '../domain/use_cases/create_task_list.dart';
+import '../domain/use_cases/delete_task.dart';
+import '../domain/use_cases/delete_task_list.dart';
+import '../domain/use_cases/get_task.dart';
+import '../domain/use_cases/get_task_list.dart';
+import '../domain/use_cases/list_task_lists.dart';
+import '../domain/use_cases/list_tasks.dart';
+import '../domain/use_cases/update_task.dart';
+import '../domain/use_cases/update_task_list.dart';
 
+/// The global service locator instance.
 final getIt = GetIt.instance;
 
+/// Configures the service locator with all dependencies.
 void setupLocator() {
   // Services
-  getIt.registerLazySingleton(() => ViewRenderer());
+  getIt.registerLazySingleton(ViewRenderer.new);
 
   // Repositories
-  getIt.registerLazySingleton<TaskRepository>(() => InMemoryTaskRepository());
+  getIt.registerLazySingleton<TaskRepository>(InMemoryTaskRepository.new);
   getIt.registerLazySingleton<TaskListRepository>(
-    () => InMemoryTaskListRepository(),
+    InMemoryTaskListRepository.new,
   );
 
   // Task Use Cases

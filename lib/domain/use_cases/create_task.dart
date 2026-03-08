@@ -2,26 +2,26 @@ import 'package:slugid/slugid.dart';
 import '../entities/task.dart';
 import '../repositories/task_repository.dart';
 
-/// The use case for creating a new task.
+/// Use case for creating a new task.
 class CreateTask {
-  final TaskRepository repository;
+  /// The repository for tasks.
+  final TaskRepository taskRepository;
 
-  CreateTask(this.repository);
+  /// Creates a [CreateTask] use case.
+  CreateTask(this.taskRepository);
 
   /// Executes the use case.
-  /// This can take raw values and turn them into a Domain Entity for validation.
   Future<Task> execute({
     required String taskListId,
     required String title,
     String description = '',
-  }) async {
+  }) {
     final task = Task(
       id: Slugid.nice().toString(),
       taskListId: taskListId,
       title: title,
       description: description,
     );
-
-    return await repository.create(task);
+    return taskRepository.save(task).then((_) => task);
   }
 }

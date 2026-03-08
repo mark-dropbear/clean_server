@@ -1,6 +1,6 @@
-import 'package:test/test.dart';
 import 'package:clean_server/domain/entities/task.dart';
 import 'package:clean_server/domain/exceptions.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('Task Entity', () {

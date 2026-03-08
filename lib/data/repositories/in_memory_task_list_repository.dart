@@ -1,13 +1,13 @@
 import '../../domain/entities/task_list.dart';
 import '../../domain/repositories/task_list_repository.dart';
 
+/// In-memory implementation of [TaskListRepository].
 class InMemoryTaskListRepository implements TaskListRepository {
   final Map<String, TaskList> _taskLists = {};
 
   @override
-  Future<TaskList> create(TaskList taskList) async {
+  Future<void> save(TaskList taskList) async {
     _taskLists[taskList.id] = taskList;
-    return taskList;
   }
 
   @override
@@ -16,7 +16,7 @@ class InMemoryTaskListRepository implements TaskListRepository {
   }
 
   @override
-  Future<TaskList?> get(String id) async {
+  Future<TaskList?> getById(String id) async {
     return _taskLists[id];
   }
 
@@ -26,8 +26,7 @@ class InMemoryTaskListRepository implements TaskListRepository {
   }
 
   @override
-  Future<TaskList> update(TaskList taskList) async {
+  Future<void> update(TaskList taskList) async {
     _taskLists[taskList.id] = taskList;
-    return taskList;
   }
 }

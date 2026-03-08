@@ -1,13 +1,15 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_static/shelf_static.dart';
-import 'task_list_handler.dart';
 import 'task_handler.dart';
+import 'task_list_handler.dart';
 import 'web_handler.dart';
 
+/// Centralized router for the application.
 class ApiRouter {
   final Router _router = Router();
 
+  /// Creates an [ApiRouter] and configures all routes.
   ApiRouter({
     required TaskListHandler taskListHandler,
     required TaskHandler taskHandler,
@@ -37,5 +39,6 @@ class ApiRouter {
     );
   }
 
+  /// Dispatches a request to the appropriate handler.
   Future<Response> call(Request request) => _router.call(request);
 }

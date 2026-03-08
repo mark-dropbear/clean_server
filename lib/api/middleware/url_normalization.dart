@@ -3,7 +3,9 @@ import 'package:shelf/shelf.dart';
 /// Middleware that removes trailing slashes from the request URL.
 ///
 /// This performs an internal rewrite by creating a new [Request] with a
-/// normalized [requestedUri].
+/// normalized requestedUri.
+///
+/// This can be added to a [Pipeline].
 Middleware stripTrailingSlash() {
   return (Handler innerHandler) {
     return (Request request) {

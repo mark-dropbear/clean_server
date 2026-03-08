@@ -1,8 +1,10 @@
+import 'dart:developer' as developer;
 import 'package:args/args.dart';
 import 'package:clean_server/app.dart';
 
 const String version = '0.0.1';
 
+/// Builds the argument parser for the CLI.
 ArgParser buildParser() {
   return ArgParser()
     ..addFlag(
@@ -11,48 +13,51 @@ ArgParser buildParser() {
       negatable: false,
       help: 'Print this usage information.',
     )
+    ..addOption(
+      'port',
+      abbr: 'p',
+      help: 'Port to listen on.',
+      defaultsTo: '8080',
+    )
     ..addFlag(
       'verbose',
       abbr: 'v',
       negatable: false,
-      help: 'Show additional command output.',
+      help: 'Enable verbose logging.',
     )
-    ..addFlag('version', negatable: false, help: 'Print the tool version.')
-    ..addOption(
-      'port',
-      abbr: 'p',
-      defaultsTo: '8080',
-      help: 'Port to listen on.',
-    );
+    ..addFlag('version', negatable: false, help: 'Print the tool version.');
 }
 
+/// Prints the usage information.
 void printUsage(ArgParser argParser) {
-  print('Usage: dart clean_server.dart <flags> [arguments]');
-  print(argParser.usage);
+  developer.log('Usage: dart clean_server.dart [arguments]');
+  developer.log(argParser.usage);
 }
 
+/// The main entry point for the CLI.
 void main(List<String> arguments) async {
-  final ArgParser argParser = buildParser();
+  final argParser = buildParser();
   try {
-    final ArgResults results = argParser.parse(arguments);
+    final results = argParser.parse(arguments);
 
+    // Process the parsed arguments.
     if (results.flag('help')) {
       printUsage(argParser);
       return;
     }
     if (results.flag('version')) {
-      print('clean_server version: $version');
+      developer.log('clean_server version: $version');
       return;
     }
 
-    final int port = int.tryParse(results['port'] as String) ?? 8080;
-    final bool verbose = results.flag('verbose');
+    final port = int.tryParse(results['port'] as String) ?? 8080;
+    final verbose = results.flag('verbose');
 
     final app = App(port: port, verbose: verbose);
     await app.run();
   } on FormatException catch (e) {
-    print(e.message);
-    print('');
+    developer.log(e.message);
+    developer.log('');
     printUsage(argParser);
   }
 }

@@ -1,8 +1,9 @@
 import 'dart:io';
-import 'package:test/test.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:clean_server/app.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http/http.dart' as http;
+import 'package:test/test.dart';
 
 void main() {
   late HttpServer server;

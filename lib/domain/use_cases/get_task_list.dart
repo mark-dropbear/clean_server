@@ -1,21 +1,24 @@
 import '../entities/task_list.dart';
 import '../repositories/task_list_repository.dart';
 import '../repositories/task_repository.dart';
-import '../exceptions.dart';
 
+/// Use case for retrieving a specific task list with its tasks.
 class GetTaskList {
+  /// The repository for task lists.
   final TaskListRepository taskListRepository;
+
+  /// The repository for tasks.
   final TaskRepository taskRepository;
 
+  /// Creates a [GetTaskList] use case.
   GetTaskList({required this.taskListRepository, required this.taskRepository});
 
-  Future<TaskList> execute(String id) async {
-    final taskList = await taskListRepository.get(id);
-    if (taskList == null) {
-      throw TaskListNotFoundException(id);
-    }
+  /// Executes the use case.
+  Future<TaskList?> execute(String id) async {
+    final list = await taskListRepository.getById(id);
+    if (list == null) return null;
 
-    final tasks = await taskRepository.listByTaskListId(id);
-    return taskList.copyWith(tasks: tasks);
+    final tasks = await taskRepository.getByTaskListId(id);
+    return list.copyWith(tasks: tasks);
   }
 }

@@ -1,13 +1,25 @@
 import '../entities/task.dart';
 
-/// Define how we can interact with tasks in storage.
-/// This interface lives in the domain layer.
+/// Repository interface for managing [Task] entities.
 abstract class TaskRepository {
-  Future<Task> create(Task task);
-  Future<Task?> get(String id);
+  /// Persists a new [Task].
+  Future<void> save(Task task);
+
+  /// Retrieves a [Task] by its [id].
+  Future<Task?> getById(String id);
+
+  /// Retrieves all tasks belonging to a specific [taskListId].
+  Future<List<Task>> getByTaskListId(String taskListId);
+
+  /// Retrieves all tasks.
   Future<List<Task>> list();
-  Future<List<Task>> listByTaskListId(String taskListId);
-  Future<Task> update(Task task);
+
+  /// Updates an existing [Task].
+  Future<void> update(Task task);
+
+  /// Deletes a [Task] by its [id].
   Future<void> delete(String id);
+
+  /// Deletes all tasks belonging to a specific [taskListId].
   Future<void> deleteByTaskListId(String taskListId);
 }

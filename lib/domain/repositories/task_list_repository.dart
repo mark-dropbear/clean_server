@@ -1,9 +1,19 @@
 import '../entities/task_list.dart';
 
+/// Repository interface for managing [TaskList] entities.
 abstract class TaskListRepository {
-  Future<TaskList> create(TaskList taskList);
-  Future<TaskList?> get(String id);
+  /// Persists a new [TaskList].
+  Future<void> save(TaskList taskList);
+
+  /// Retrieves a [TaskList] by its [id].
+  Future<TaskList?> getById(String id);
+
+  /// Retrieves all task lists.
   Future<List<TaskList>> list();
-  Future<TaskList> update(TaskList taskList);
+
+  /// Updates an existing [TaskList].
+  Future<void> update(TaskList taskList);
+
+  /// Deletes a [TaskList] by its [id].
   Future<void> delete(String id);
 }

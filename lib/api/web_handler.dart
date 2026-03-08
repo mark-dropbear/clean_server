@@ -3,9 +3,10 @@ import 'view_renderer.dart';
 
 /// Handler for web-related endpoints (HTML pages).
 class WebHandler {
-  final ViewRenderer _view;
+  final ViewRenderer _renderer;
 
-  WebHandler(this._view);
+  /// Creates a [WebHandler].
+  WebHandler(this._renderer);
 
   /// Renders the home page.
   ///
@@ -14,16 +15,23 @@ class WebHandler {
     final name = request.url.queryParameters['name'] ?? 'World';
 
     try {
-      final output = await _view.render('home', {'name': name});
+      final output = await _renderer.render('home', {'name': name});
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
-    } catch (e) {
-      final errorOutput = await _view.render('error_500', {
-        'message': e.toString(),
-      });
-      return Response.internalServerError(
-        body: errorOutput,
-        headers: {'Content-Type': 'text/html'},
-      );
+    } on Exception catch (e) {
+      try {
+        final errorOutput = await _renderer.render('error_500', {
+          'message': e.toString(),
+        });
+        return Response.internalServerError(
+          body: errorOutput,
+          headers: {'Content-Type': 'text/html'},
+        );
+      } on Exception catch (innerError) {
+        // Fallback to plain text if the error page fails to render
+        return Response.internalServerError(
+          body: 'Failed to render: $e\nInner rendering error: $innerError',
+        );
+      }
     }
   }
 }
