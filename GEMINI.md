@@ -9,7 +9,7 @@
 - **Dependency Injection**: `get_it`
 - **Template Engine**: `mustache_template`
 - **Logging**: `package:logging` with hierarchical levels and stdout/stderr output.
-- **Data Serialization**: Extension-based `toMap` and top-level `fromMap` functions.
+- **Data Serialization**: Extension-based `toMap`, `toJsonLd` and top-level `fromMap` functions.
 - **Testing**: `test`, `http`
 - **Linting**: Custom strict configuration (see `analysis_options.yaml`).
 
@@ -28,7 +28,7 @@ The project is organized into layers to separate concerns:
   - `use_cases/`: Orchestrate domain logic and handle existence/validation checks.
 - **`lib/data/`**: Implementation details.
   - `repositories/`: In-memory implementations of domain interfaces.
-  - `mappers/`: Mapping logic decoupled from entities via extensions.
+  - `mappers/`: Mapping logic decoupled from entities via extensions. Supports standard JSON and JSON-LD (Schema.org).
 - **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
 - **`lib/core/`**: Shared infrastructure logic like logging.
 - **`web/`**: Assets and templates for the web frontend.
@@ -53,6 +53,13 @@ The project is organized into layers to separate concerns:
   - **API**: Integration-style unit tests for handlers (`test/api/`) and the central router.
 - **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
 - **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly, verifying logic and routing without the overhead of a real HTTP server.
+
+### JSON-LD Support
+- **Schema.org Integration**: Entities support JSON-LD serialization via `toJsonLd()` extension methods.
+- **Mapping**:
+  - `TaskList` $\rightarrow$ `https://schema.org/ItemList`
+  - `Task` $\rightarrow$ `https://schema.org/Action`
+- **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
 
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
