@@ -9,6 +9,7 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
 | 2026-03-08 | Initial | Plan created and approved. |
 | 2026-03-08 | Phase 1 | Existing tests passed. |
 | 2026-03-08 | Phase 2 | Implemented domain layer entities, repository interface, and use case. Fixed inference issues in tests. |
+| 2026-03-08 | Phase 3 | Implemented data layer mappers and in-memory repository. Added unit tests. |
 
 ## Phases
 
@@ -31,15 +32,15 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
   - [x] Update Journal and commit changes.
 
 ### Phase 3: Data Layer Implementation
-- [ ] Create `lib/features/reporting/data/mappers/report_mapper.dart`.
-- [ ] Create `lib/features/reporting/data/repositories/in_memory_report_repository.dart`.
-- [ ] **Validation**:
-  - [ ] Create unit tests for `ReportMapper` and `InMemoryReportRepository`.
-  - [ ] Run `dart_fix --apply`.
-  - [ ] Run `dart analyze`.
-  - [ ] Run `dart test`.
-  - [ ] Run `dart format .`.
-  - [ ] Update Journal and commit changes.
+- [x] Create `lib/features/reporting/data/mappers/report_mapper.dart`.
+- [x] Create `lib/features/reporting/data/repositories/in_memory_report_repository.dart`.
+- [x] **Validation**:
+  - [x] Create unit tests for `ReportMapper` and `InMemoryReportRepository`.
+  - [x] Run `dart_fix --apply`.
+  - [x] Run `dart analyze`.
+  - [x] Run `dart test`.
+  - [x] Run `dart format .`.
+  - [x] Update Journal and commit changes.
 
 ### Phase 4: Presentation Layer Implementation
 - [ ] Create `lib/features/reporting/presentation/handlers/report_handler.dart`.
