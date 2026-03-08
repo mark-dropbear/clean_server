@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.js",
+    "./pages/contact.js": "./src/pages/contact.js",
     "./pages/demo.js": "./src/pages/demo.js",
     "./pages/home.js": "./src/pages/home.js"
   },
