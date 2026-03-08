@@ -1,7 +1,7 @@
 # GEMINI.md - Project Context for `clean_server`
 
 ## Project Overview
-`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation.
+`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation with built-in CSRF protection.
 
 ### Main Technologies
 - **Language**: Dart (SDK ^3.11.0)
@@ -25,6 +25,9 @@ The project is organized into layers to separate concerns:
   - `feedback_handler.dart`: JSON logic for feedback submissions.
   - `web_handler.dart`: Handler for SSR HTML pages.
   - `view_renderer.dart`: Centralized template/partial resolution and rendering.
+  - **`lib/api/middleware/`**: Shared middleware logic.
+    - `csrf_protection.dart`: Implements Double Submit Cookie pattern with `HttpOnly` cookie and custom header validation.
+    - `url_normalization.dart`: Trimming trailing slashes.
 - **`lib/domain/`**: Pure business logic (entities, use cases, repository interfaces).
   - `entities/`: `@immutable` models (using `package:meta`).
   - `use_cases/`: Orchestrate domain logic and handle existence/validation checks.
@@ -85,7 +88,10 @@ The project is organized into layers to separate concerns:
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
 - **Modern Frontend**: Native JS modules and dynamic `ImportMaps` (via shared partial). No heavy build pipeline for production delivery.
-- **Security**: Mandatory HTML escaping in templates and explicit exception handling (`on Exception catch (e, st)`).
+- **Security**: 
+  - Mandatory HTML escaping in templates.
+  - CSRF protection via Double Submit Cookie pattern. The `csrfProtection` middleware sets a secure `HttpOnly` cookie and validates an `x-xsrf-token` header. The token is passed to frontend components via template attributes for inclusion in headers.
+  - Explicit exception handling (`on Exception catch (e, st)`).
 
 ### Logging Strategy
 - **Library**: Always use `package:logging`. Initialize it via `initLogging()` in the entry point.
