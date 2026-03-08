@@ -4,14 +4,14 @@ import 'package:logging/logging.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 
-import 'api/api_router.dart';
-import 'api/feedback_handler.dart';
-import 'api/middleware/csrf_protection.dart';
-import 'api/middleware/url_normalization.dart';
-import 'api/task_handler.dart';
-import 'api/task_list_handler.dart';
-import 'api/web_handler.dart';
+import 'app_router.dart';
+import 'core/middleware/csrf_protection.dart';
+import 'core/middleware/url_normalization.dart';
 import 'di/service_locator.dart';
+import 'features/feedback/presentation/handlers/feedback_handler.dart';
+import 'features/pages/presentation/handlers/web_handler.dart';
+import 'features/tasks/presentation/handlers/task_handler.dart';
+import 'features/tasks/presentation/handlers/task_list_handler.dart';
 
 /// The main application class that manages the server lifecycle.
 class App {
@@ -32,7 +32,7 @@ class App {
     setupLocator();
 
     // 2. Build the router
-    final router = ApiRouter(
+    final router = AppRouter(
       taskListHandler: getIt<TaskListHandler>(),
       taskHandler: getIt<TaskHandler>(),
       webHandler: getIt<WebHandler>(),

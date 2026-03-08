@@ -1,7 +1,7 @@
 # GEMINI.md - Project Context for `clean_server`
 
 ## Project Overview
-`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation with built-in CSRF protection.
+`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles within a **Feature-First** structure to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation with built-in CSRF protection.
 
 ### Main Technologies
 - **Language**: Dart (SDK ^3.11.0)
@@ -15,34 +15,32 @@
 - **Linting**: Custom strict configuration (see `analysis_options.yaml`).
 
 ## Architecture
-The project is organized into layers to separate concerns:
+The project is organized using a **Feature-First** approach with layered concerns inside each feature:
 
 - **`bin/`**: CLI entry point (`clean_server.dart`). Initializes the logging system.
-- **`lib/api/`**: Request handlers, routing logic, and rendering services.
-  - `api_router.dart`: Centralized `Router` with static asset mounting at `/frontend/`.
-  - `task_list_handler.dart`: JSON logic for task list endpoints.
-  - `task_handler.dart`: JSON logic for task endpoints.
-  - `feedback_handler.dart`: JSON logic for feedback submissions.
-  - `web_handler.dart`: Handler for SSR HTML pages.
-  - `view_renderer.dart`: Centralized template/partial resolution and rendering.
-  - **`lib/api/middleware/`**: Shared middleware logic.
-    - `csrf_protection.dart`: Implements Double Submit Cookie pattern with `HttpOnly` cookie and custom header validation.
-    - `url_normalization.dart`: Trimming trailing slashes.
-- **`lib/domain/`**: Pure business logic (entities, use cases, repository interfaces).
-  - `entities/`: `@immutable` models (using `package:meta`).
-  - `use_cases/`: Orchestrate domain logic and handle existence/validation checks.
-- **`lib/data/`**: Implementation details.
-  - `repositories/`: In-memory implementations of domain interfaces.
-  - `mappers/`: Mapping logic decoupled from entities via extensions. Supports standard JSON and JSON-LD (Schema.org).
-- **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
-- **`lib/core/`**: Shared infrastructure logic like logging.
+- **`lib/`**:
+  - `app.dart`: Main application class and server setup.
+  - `app_router.dart`: Centralized `AppRouter` with static asset mounting at `/frontend/`.
+  - **`lib/core/`**: Shared infrastructure logic.
+    - `exceptions.dart`: Centralized domain exceptions.
+    - `logging.dart`: Logger configuration.
+    - `view_renderer.dart`: Centralized template/partial resolution and rendering.
+    - **`lib/core/middleware/`**: Shared middleware logic (CSRF, URL normalization).
+  - **`lib/features/`**: Business functionality grouped by feature.
+    - **`tasks/`**: Logic for managing tasks and task lists.
+      - `domain/`: Entities (`task.dart`, `task_list.dart`), Use Cases, and Repository interfaces.
+      - `data/`: In-memory Repositories and Mappers.
+      - `presentation/`: `TaskHandler` and `TaskListHandler`.
+    - **`feedback/`**: Logic for processing user feedback.
+      - `domain/`: `FeedbackForm` entity, Use Case, and Repository interface.
+      - `data/`: In-memory Repository and Mapper.
+      - `presentation/`: `FeedbackHandler`.
+    - **`pages/`**: Logic for server-side rendered pages.
+      - `presentation/`: `WebHandler`.
+  - **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
 - **`web/`**: Assets, templates, and frontend source code.
-  - `templates/`: SSR Mustache templates (e.g., `home`, `demo`, `contact`).
-    - `partials/`: Reusable template fragments (e.g., `importmap`, `csrf`).
-  - `frontend/`: Dedicated npm package for frontend components.
-    - `src/`: Source JS/CSS files for Lit components.
-      - `utils.js`: Shared frontend utilities (e.g., `getCsrfToken`).
-    - `dist/`: Generated assets and dynamic import map (`importmap.js`).
+  - `templates/`: SSR Mustache templates.
+  - `frontend/`: Lit components and frontend assets.
 
 ## Building and Running
 
@@ -61,65 +59,32 @@ The project is organized into layers to separate concerns:
 
 ## Development Conventions
 
+### Feature-First Organization
+- Always group new functionality into a dedicated feature folder under `lib/features/`.
+- Maintain the layered structure (`domain`, `data`, `presentation`) within each feature.
+- Shared cross-cutting concerns (e.g., auth, global models) belong in `lib/core/`.
+
 ### Testing Strategy
-- **Layered Coverage**: The project maintains comprehensive test coverage across all Clean Architecture layers:
-  - **Domain**: Unit tests for entities (`test/domain/entities/`) and use cases (`test/domain/use_cases/`).
-  - **Data**: Unit tests for mappers (`test/data/mappers/`) and repository implementations (`test/data/repositories/`).
-  - **API**: Integration-style unit tests for handlers (`test/api/`) and the central router.
+- **Layered Coverage**: The project maintains comprehensive test coverage across all features and layers, mirrored in the `test/` directory.
+- **Organization**: Tests are organized by feature (e.g., `test/features/tasks/`) and then by layer (`domain`, `data`, `presentation`).
 - **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
-- **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly, verifying logic and routing without the overhead of a real HTTP server.
+- **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly.
+- **Integration Tests**: Feature-level and app-level integration tests reside in their respective feature folders or the root of `test/`.
 
 ### JSON-LD Support
-- **Schema.org Integration**: Entities support JSON-LD serialization via `toJsonLd()` extension methods.
-- **Mapping**:
-  - `TaskList` $\rightarrow$ `https://schema.org/ItemList`
-  - `Task` $\rightarrow$ `https://schema.org/Action`
-  - `FeedbackForm` $\rightarrow$ `https://schema.org/Message`
-- **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
+- Entities support JSON-LD serialization via `toJsonLd()` extension methods mapping to Schema.org types (e.g., `ItemList`, `Action`, `Message`).
 
-### Frontend Development (Lit & JSPM)
-- **Component Development**: Build UI components using **Lit** in the `web/frontend/` directory.
-- **Import Maps**: The project uses **JSPM** to automatically generate a dynamic import map (`importmap.js`). This script is loaded in templates to resolve bare specifiers like `lit` and `frontend` at runtime.
-- **Integration**: The server mounts `web/frontend/dist/` to serve these assets. Components are loaded in templates using standard ESM `import` statements.
-
-### Global and Page Components
-- **Global App Container**: The `<app-container>` Lit component handles global concerns (e.g., auth, theme, progressive enhancement) and is present on all pages.
-- **Page Components**: Each page has a dedicated Lit component (e.g., `<home-page>`, `<demo-page>`, `<contact-page>`) that handles page-specific logic, event handlers, and importing page specific CSS and JavaScript modules.
-- **Progressive Enhancement**: The `<app-container>` updates the `data-js` attribute on the `<body>` tag to `true` upon initialization, signaling that JavaScript is active.
-
-### Web & Frontend Strategy
-- **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
-- **Modern Frontend**: Native JS modules and dynamic `ImportMaps` (via shared partial). No heavy build pipeline for production delivery.
-- **Security**: 
-  - Mandatory HTML escaping in templates.
-  - CSRF protection via Double Submit Cookie pattern. The `csrfProtection` middleware sets a secure `HttpOnly` cookie and validates an `x-xsrf-token` header. The token is passed to frontend components via a centralized `<meta name="csrf-token">` tag (rendered via `csrf` partial).
-  - Explicit exception handling (`on Exception catch (e, st)`).
+### Security
+- Mandatory HTML escaping in templates.
+- CSRF protection via Double Submit Cookie pattern.
 
 ### Logging Strategy
-- **Library**: Always use `package:logging`. Initialize it via `initLogging()` in the entry point.
-- **Levels**:
-  - `INFO`: Significant application events (server start, creation of resources).
-  - `WARNING`: Handled errors or missing resources (404s).
-  - `SEVERE`: Unhandled exceptions or critical failures (500s).
-  - `FINE`/`FINEST`: Detailed tracing for debugging (SQL/Data access, URL normalization, template loading).
-- **Format**: Logs are timestamped and include the logger name and level.
-- **Output**:
-  - Levels below `WARNING` go to `stdout`.
-  - `WARNING` and above go to `stderr`.
-- **Usage**:
-  ```dart
-  static final _logger = Logger('MyClassName');
-  _logger.info('Something happened');
-  _logger.severe('Critical error', error, stackTrace);
-  ```
+- Use `package:logging`.
+- `INFO`: Significant events.
+- `WARNING`: Handled errors (404s).
+- `SEVERE`: Unhandled exceptions.
+- `FINE`/`FINEST`: Tracing (SQL, middleware).
 
 ### Coding Style
 - Follows the [Official Dart Style Guide](https://dart.dev/guides/language/effective-dart/style).
-- **Strict Linting**: The project uses a high-bar linting configuration. Always run `dart analyze` and `dart fix` before committing.
-- **Documentation**: All public members must have concise `///` doc comments.
-
-### Key Patterns
-- **Standardized Repositories**: Use consistent naming (e.g., `getById`, `save`, `delete`).
-- **Use Case Responsibility**: Use cases are responsible for domain logic, including existence checks and throwing domain exceptions. Handlers focus on HTTP orchestration.
-- **Immutability**: All domain entities are `@immutable`. Use `copyWith` for creating modified instances.
-- **Data Mapping**: Mapping logic lives in the `data` layer. Entities are extended with `toMap()` for serialization, while top-level `fromMap` functions handle de-serialization.
+- **Strict Linting**: High-bar configuration. Run `dart analyze` and `dart fix` before committing.

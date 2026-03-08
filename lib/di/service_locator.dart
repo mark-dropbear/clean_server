@@ -1,26 +1,27 @@
 import 'package:get_it/get_it.dart';
-import '../api/feedback_handler.dart';
-import '../api/task_handler.dart';
-import '../api/task_list_handler.dart';
-import '../api/view_renderer.dart';
-import '../api/web_handler.dart';
-import '../data/repositories/in_memory_feedback_repository.dart';
-import '../data/repositories/in_memory_task_list_repository.dart';
-import '../data/repositories/in_memory_task_repository.dart';
-import '../domain/repositories/feedback_repository.dart';
-import '../domain/repositories/task_list_repository.dart';
-import '../domain/repositories/task_repository.dart';
-import '../domain/use_cases/create_task.dart';
-import '../domain/use_cases/create_task_list.dart';
-import '../domain/use_cases/delete_task.dart';
-import '../domain/use_cases/delete_task_list.dart';
-import '../domain/use_cases/get_task.dart';
-import '../domain/use_cases/get_task_list.dart';
-import '../domain/use_cases/list_task_lists.dart';
-import '../domain/use_cases/list_tasks.dart';
-import '../domain/use_cases/submit_feedback.dart';
-import '../domain/use_cases/update_task.dart';
-import '../domain/use_cases/update_task_list.dart';
+
+import '../core/view_renderer.dart';
+import '../features/feedback/data/repositories/in_memory_feedback_repository.dart';
+import '../features/feedback/domain/repositories/feedback_repository.dart';
+import '../features/feedback/domain/use_cases/submit_feedback.dart';
+import '../features/feedback/presentation/handlers/feedback_handler.dart';
+import '../features/pages/presentation/handlers/web_handler.dart';
+import '../features/tasks/data/repositories/in_memory_task_list_repository.dart';
+import '../features/tasks/data/repositories/in_memory_task_repository.dart';
+import '../features/tasks/domain/repositories/task_list_repository.dart';
+import '../features/tasks/domain/repositories/task_repository.dart';
+import '../features/tasks/domain/use_cases/create_task.dart';
+import '../features/tasks/domain/use_cases/create_task_list.dart';
+import '../features/tasks/domain/use_cases/delete_task.dart';
+import '../features/tasks/domain/use_cases/delete_task_list.dart';
+import '../features/tasks/domain/use_cases/get_task.dart';
+import '../features/tasks/domain/use_cases/get_task_list.dart';
+import '../features/tasks/domain/use_cases/list_task_lists.dart';
+import '../features/tasks/domain/use_cases/list_tasks.dart';
+import '../features/tasks/domain/use_cases/update_task.dart';
+import '../features/tasks/domain/use_cases/update_task_list.dart';
+import '../features/tasks/presentation/handlers/task_handler.dart';
+import '../features/tasks/presentation/handlers/task_list_handler.dart';
 
 /// The global service locator instance.
 final getIt = GetIt.instance;
@@ -88,8 +89,11 @@ void setupLocator() {
       createTaskList: getIt<CreateTaskList>(),
       getTaskList: getIt<GetTaskList>(),
       listTaskLists: getIt<ListTaskLists>(),
-      updateTaskList: getIt<UpdateTaskList>(),
-      deleteTaskList: getIt<DeleteTaskList>(),
+      updateTaskList: UpdateTaskList(getIt<TaskListRepository>()),
+      deleteTaskList: DeleteTaskList(
+        taskListRepository: getIt<TaskListRepository>(),
+        taskRepository: getIt<TaskRepository>(),
+      ),
     ),
   );
 
