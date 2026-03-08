@@ -15,10 +15,15 @@ import '../domain/use_cases/update_task_list.dart';
 import '../domain/use_cases/delete_task_list.dart';
 import '../api/task_handler.dart';
 import '../api/task_list_handler.dart';
+import '../api/web_handler.dart';
+import '../api/view_renderer.dart';
 
 final getIt = GetIt.instance;
 
 void setupLocator() {
+  // Services
+  getIt.registerLazySingleton(() => ViewRenderer());
+
   // Repositories
   getIt.registerLazySingleton<TaskRepository>(() => InMemoryTaskRepository());
   getIt.registerLazySingleton<TaskListRepository>(
@@ -73,4 +78,6 @@ void setupLocator() {
       deleteTaskList: getIt<DeleteTaskList>(),
     ),
   );
+
+  getIt.registerLazySingleton(() => WebHandler(getIt<ViewRenderer>()));
 }

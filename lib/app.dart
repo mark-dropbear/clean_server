@@ -4,6 +4,7 @@ import 'package:shelf/shelf_io.dart';
 import 'di/service_locator.dart';
 import 'api/task_list_handler.dart';
 import 'api/task_handler.dart';
+import 'api/web_handler.dart';
 import 'api/api_router.dart';
 import 'api/middleware/url_normalization.dart';
 
@@ -23,6 +24,7 @@ class App {
     final router = ApiRouter(
       taskListHandler: getIt<TaskListHandler>(),
       taskHandler: getIt<TaskHandler>(),
+      webHandler: getIt<WebHandler>(),
     );
 
     // 3. Configure the middleware and handler

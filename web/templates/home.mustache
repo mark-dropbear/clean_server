@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello {{name}}</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    {{> importmap }}
+    <script type="module" src="/assets/js/main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello, {{name}}!</h1>
+        <p>This page is rendered using server-side Mustache templates.</p>
+        <p>The time is <span id="time"></span>.</p>
+    </div>
+</body>
+</html>

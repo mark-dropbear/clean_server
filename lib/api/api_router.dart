@@ -1,7 +1,9 @@
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:shelf_static/shelf_static.dart';
 import 'task_list_handler.dart';
 import 'task_handler.dart';
+import 'web_handler.dart';
 
 class ApiRouter {
   final Router _router = Router();
@@ -9,7 +11,14 @@ class ApiRouter {
   ApiRouter({
     required TaskListHandler taskListHandler,
     required TaskHandler taskHandler,
+    required WebHandler webHandler,
   }) {
+    // Web Routes
+    _router.get('/', webHandler.home);
+
+    // Static Assets
+    _router.mount('/assets/', createStaticHandler('web/assets'));
+
     // Task List Routes
     _router.get('/task-lists', taskListHandler.list);
     _router.post('/task-lists', taskListHandler.create);
