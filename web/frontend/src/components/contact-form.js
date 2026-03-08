@@ -1,9 +1,9 @@
 import { LitElement, html } from 'lit';
 import componentStyles from './contact-form.css' with { type: 'css' };
+import { getCsrfToken } from '../utils.js';
 
 export class ContactForm extends LitElement {
   static properties = {
-    csrfToken: { type: String, attribute: 'csrf-token' },
     _isSubmitting: { state: true },
     _success: { state: true },
     _error: { state: true },
@@ -13,7 +13,6 @@ export class ContactForm extends LitElement {
 
   constructor() {
     super();
-    this.csrfToken = '';
     this._isSubmitting = false;
     this._success = false;
     this._error = null;
@@ -85,13 +84,14 @@ export class ContactForm extends LitElement {
 
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
+    const csrfToken = getCsrfToken();
 
     try {
       const response = await fetch('/api/feedback', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-xsrf-token': this.csrfToken,
+          'x-xsrf-token': csrfToken || '',
         },
         body: JSON.stringify(data),
       });
