@@ -3,7 +3,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'di/service_locator.dart';
-import 'api/task_handler.dart';
+import 'api/task_list_handler.dart';
 
 /// The main application class that manages the server lifecycle.
 class App {
@@ -20,8 +20,8 @@ class App {
     // 2. Build the router
     final router = Router();
 
-    // We mount the task handler under the /tasks prefix
-    router.mount('/tasks', getIt<TaskHandler>().router.call);
+    // We mount the task list handler under the /task-lists prefix
+    router.mount('/task-lists/', getIt<TaskListHandler>().router.call);
 
     // 3. Configure the middleware and handler
     var pipeline = const Pipeline();

@@ -7,6 +7,7 @@ class TaskMapper {
   static Map<String, dynamic> toMap(Task task) {
     return {
       'id': task.id,
+      'task_list_id': task.taskListId,
       'title': task.title,
       'description': task.description,
       'is_completed': task.isCompleted,
@@ -17,6 +18,7 @@ class TaskMapper {
   static Task fromMap(Map<String, dynamic> map) {
     return Task(
       id: map['id'] as String,
+      taskListId: map['task_list_id'] as String,
       title: map['title'] as String,
       description: (map['description'] as String?) ?? '',
       isCompleted: (map['is_completed'] as bool?) ?? false,

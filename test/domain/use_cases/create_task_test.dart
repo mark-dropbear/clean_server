@@ -14,11 +14,13 @@ void main() {
   group('CreateTask Use Case', () {
     test('should create a task and save it to repository', () async {
       final task = await createUseCase.execute(
+        taskListId: 'list-1',
         title: 'New Task',
         description: 'New Description',
       );
 
       expect(task.title, 'New Task');
+      expect(task.taskListId, 'list-1');
       expect(task.description, 'New Description');
       expect(task.id, isNotEmpty);
 

@@ -17,3 +17,9 @@ class TaskNotFoundException extends DomainException {
   final String id;
   TaskNotFoundException(this.id) : super('Task with ID $id not found');
 }
+
+/// Thrown when a task list is not found.
+class TaskListNotFoundException extends DomainException {
+  final String id;
+  TaskListNotFoundException(this.id) : super('TaskList with ID $id not found');
+}

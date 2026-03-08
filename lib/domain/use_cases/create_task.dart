@@ -10,9 +10,14 @@ class CreateTask {
 
   /// Executes the use case.
   /// This can take raw values and turn them into a Domain Entity for validation.
-  Future<Task> execute({required String title, String description = ''}) async {
+  Future<Task> execute({
+    required String taskListId,
+    required String title,
+    String description = '',
+  }) async {
     final task = Task(
       id: Slugid.nice().toString(),
+      taskListId: taskListId,
       title: title,
       description: description,
     );

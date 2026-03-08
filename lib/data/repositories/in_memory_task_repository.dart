@@ -18,6 +18,11 @@ class InMemoryTaskRepository implements TaskRepository {
   }
 
   @override
+  Future<void> deleteByTaskListId(String taskListId) async {
+    _tasks.removeWhere((id, task) => task.taskListId == taskListId);
+  }
+
+  @override
   Future<Task?> get(String id) async {
     return _tasks[id];
   }
@@ -25,6 +30,13 @@ class InMemoryTaskRepository implements TaskRepository {
   @override
   Future<List<Task>> list() async {
     return _tasks.values.toList();
+  }
+
+  @override
+  Future<List<Task>> listByTaskListId(String taskListId) async {
+    return _tasks.values
+        .where((task) => task.taskListId == taskListId)
+        .toList();
   }
 
   @override

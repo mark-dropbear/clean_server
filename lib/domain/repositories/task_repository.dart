@@ -6,6 +6,8 @@ abstract class TaskRepository {
   Future<Task> create(Task task);
   Future<Task?> get(String id);
   Future<List<Task>> list();
+  Future<List<Task>> listByTaskListId(String taskListId);
   Future<Task> update(Task task);
   Future<void> delete(String id);
+  Future<void> deleteByTaskListId(String taskListId);
 }

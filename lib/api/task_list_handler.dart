@@ -2,57 +2,72 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import '../domain/exceptions.dart';
-import '../domain/use_cases/create_task.dart';
-import '../domain/use_cases/get_task.dart';
-import '../domain/use_cases/update_task.dart';
-import '../domain/use_cases/delete_task.dart';
-import '../domain/repositories/task_repository.dart';
-import '../data/mappers/task_mapper.dart';
+import '../domain/use_cases/create_task_list.dart';
+import '../domain/use_cases/get_task_list.dart';
+import '../domain/use_cases/list_task_lists.dart';
+import '../domain/use_cases/update_task_list.dart';
+import '../domain/use_cases/delete_task_list.dart';
+import '../data/mappers/task_list_mapper.dart';
+import 'task_handler.dart';
 
-/// Handles HTTP requests for the Task resource.
-/// Now designed to be nested under `/task-lists/<taskListId>/tasks`
-class TaskHandler {
-  final CreateTask _createTask;
-  final GetTask _getTask;
-  final UpdateTask _updateTask;
-  final DeleteTask _deleteTask;
-  final TaskRepository _taskRepository;
+class TaskListHandler {
+  final CreateTaskList _createTaskList;
+  final GetTaskList _getTaskList;
+  final ListTaskLists _listTaskLists;
+  final UpdateTaskList _updateTaskList;
+  final DeleteTaskList _deleteTaskList;
+  final TaskHandler _taskHandler;
 
-  TaskHandler({
-    required CreateTask createTask,
-    required GetTask getTask,
-    required UpdateTask updateTask,
-    required DeleteTask deleteTask,
-    required TaskRepository taskRepository,
-  }) : _createTask = createTask,
-       _getTask = getTask,
-       _updateTask = updateTask,
-       _deleteTask = deleteTask,
-       _taskRepository = taskRepository;
+  TaskListHandler({
+    required CreateTaskList createTaskList,
+    required GetTaskList getTaskList,
+    required ListTaskLists listTaskLists,
+    required UpdateTaskList updateTaskList,
+    required DeleteTaskList deleteTaskList,
+    required TaskHandler taskHandler,
+  }) : _createTaskList = createTaskList,
+       _getTaskList = getTaskList,
+       _listTaskLists = listTaskLists,
+       _updateTaskList = updateTaskList,
+       _deleteTaskList = deleteTaskList,
+       _taskHandler = taskHandler;
 
   Router get router {
     final router = Router();
 
-    router.get('/', _listByTaskList);
+    router.get('/', _list);
     router.post('/', _create);
     router.get('/<id>', _get);
     router.put('/<id>', _update);
     router.delete('/<id>', _delete);
 
+    // Route all sub-paths to a dispatcher that handles parameters
+    router.all('/<id>/tasks', _handleTasks);
+    router.all('/<id>/tasks/<any|.*>', _handleTasks);
+
     return router;
   }
 
-  Future<Response> _listByTaskList(Request request) async {
-    final taskListId = request.context['taskListId'] as String?;
+  Future<Response> _handleTasks(Request request) async {
+    final id = request.params['id']!;
 
-    if (taskListId == null) {
-      return Response.badRequest(
-        body: jsonEncode({'error': 'Missing TaskList ID'}),
-      );
-    }
+    // request.change(path: '...') consumes segments from the START of url.path.
+    // In our case, requested path is /task-lists/<id>/tasks/...
+    // Since we are inside TaskListHandler (mounted at /task-lists/),
+    // url.path starts with '<id>/tasks/...'.
+    // We want to consume '<id>/tasks' so the next router sees the rest.
 
-    final tasks = await _taskRepository.listByTaskListId(taskListId);
-    final json = tasks.map(TaskMapper.toMap).toList();
+    final newRequest = request.change(
+      path: '$id/tasks',
+      context: {'taskListId': id},
+    );
+
+    return _taskHandler.router.call(newRequest);
+  }
+
+  Future<Response> _list(Request request) async {
+    final lists = await _listTaskLists.execute();
+    final json = lists.map(TaskListMapper.toMap).toList();
     return Response.ok(
       jsonEncode(json),
       headers: {'Content-Type': 'application/json'},
@@ -61,12 +76,12 @@ class TaskHandler {
 
   Future<Response> _get(Request request, String id) async {
     try {
-      final task = await _getTask.execute(id);
+      final list = await _getTaskList.execute(id);
       return Response.ok(
-        jsonEncode(TaskMapper.toMap(task)),
+        jsonEncode(TaskListMapper.toMap(list)),
         headers: {'Content-Type': 'application/json'},
       );
-    } on TaskNotFoundException catch (e) {
+    } on TaskListNotFoundException catch (e) {
       return Response.notFound(jsonEncode({'error': e.message}));
     } catch (e) {
       return Response.internalServerError(
@@ -78,26 +93,17 @@ class TaskHandler {
 
   Future<Response> _create(Request request) async {
     try {
-      final taskListId = request.context['taskListId'] as String?;
-
-      if (taskListId == null) {
-        return Response.badRequest(
-          body: jsonEncode({'error': 'Missing TaskList ID'}),
-        );
-      }
-
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
-      final task = await _createTask.execute(
-        taskListId: taskListId,
+      final list = await _createTaskList.execute(
         title: data['title'] as String,
         description: (data['description'] as String?) ?? '',
       );
 
       return Response(
         201,
-        body: jsonEncode(TaskMapper.toMap(task)),
+        body: jsonEncode(TaskListMapper.toMap(list)),
         headers: {'Content-Type': 'application/json'},
       );
     } on InvalidTaskException catch (e) {
@@ -115,18 +121,17 @@ class TaskHandler {
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
-      final task = await _updateTask.execute(
+      final list = await _updateTaskList.execute(
         id,
         title: data['title'] as String?,
         description: data['description'] as String?,
-        isCompleted: data['is_completed'] as bool?,
       );
 
       return Response.ok(
-        jsonEncode(TaskMapper.toMap(task)),
+        jsonEncode(TaskListMapper.toMap(list)),
         headers: {'Content-Type': 'application/json'},
       );
-    } on TaskNotFoundException catch (e) {
+    } on TaskListNotFoundException catch (e) {
       return Response.notFound(jsonEncode({'error': e.message}));
     } on InvalidTaskException catch (e) {
       return Response.badRequest(body: jsonEncode({'error': e.message}));
@@ -140,9 +145,9 @@ class TaskHandler {
 
   Future<Response> _delete(Request request, String id) async {
     try {
-      await _deleteTask.execute(id);
+      await _deleteTaskList.execute(id);
       return Response(204);
-    } on TaskNotFoundException catch (e) {
+    } on TaskListNotFoundException catch (e) {
       return Response.notFound(jsonEncode({'error': e.message}));
     } catch (e) {
       return Response.internalServerError(
