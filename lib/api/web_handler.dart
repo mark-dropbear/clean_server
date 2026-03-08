@@ -21,7 +21,11 @@ class WebHandler {
     final name = request.url.queryParameters['name'] ?? 'World';
 
     try {
-      final output = await _renderer.render('home', {'name': name});
+      final csrfToken = request.context['csrfToken'] as String?;
+      final output = await _renderer.render('home', {
+        'name': name,
+        'csrfToken': csrfToken,
+      });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {
       _logger.warning(
@@ -98,7 +102,11 @@ class WebHandler {
     final jsonLd = jsonEncode(dummyList.toJsonLd());
 
     try {
-      final output = await _renderer.render('demo', {'jsonLd': jsonLd});
+      final csrfToken = request.context['csrfToken'] as String?;
+      final output = await _renderer.render('demo', {
+        'jsonLd': jsonLd,
+        'csrfToken': csrfToken,
+      });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {
       _logger.severe('Error rendering demo page', e, st);
