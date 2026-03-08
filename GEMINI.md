@@ -16,8 +16,9 @@ The project is organized into layers to separate concerns:
 
 - **`bin/`**: The application entry point (`clean_server.dart`), which handles CLI argument parsing (port, verbose logging) and initializes the `App`.
 - **`lib/api/`**: Contains the `shelf` request handlers and routing logic.
-  - `task_list_handler.dart`: Manages task list endpoints.
-  - `task_handler.dart`: Manages individual task endpoints.
+  - `api_router.dart`: Centralized `Router` that wires all endpoints.
+  - `task_list_handler.dart`: Decoupled logic for task list endpoints.
+  - `task_handler.dart`: Decoupled logic for task endpoints.
 - **`lib/domain/`**: The core business logic, independent of external frameworks.
   - `entities/`: Core data models (e.g., `Task`, `TaskList`).
   - `use_cases/`: Specific business actions (e.g., `CreateTask`, `GetTaskList`).
@@ -34,7 +35,7 @@ The project is organized into layers to separate concerns:
 - **Run the Server**: `dart run bin/clean_server.dart`
   - *Defaults to port 8080.*
   - *Use `--port <port>` to change the port.*
-  - *Use `--verbose` or `-v` for request logging.*
+  - *Use `--verbose" or `-v` for request logging.*
 - **Run Tests**: `dart test`
 - **Static Analysis**: `dart analyze`
 - **Format Code**: `dart format .`
@@ -55,5 +56,6 @@ Dependencies are managed via `pubspec.yaml`. Run `dart pub get` to install them.
 
 ### Key Patterns
 - **Dependency Injection**: All handlers, use cases, and repositories should be registered in `lib/di/service_locator.dart` and accessed via `getIt<T>()`.
+- **Routing**: Centralized routing in `ApiRouter` using flat, explicit parameters (e.g., `<taskListId>`).
 - **Error Handling**: Throw domain-specific exceptions (from `lib/domain/exceptions.dart`) in use cases and catch them in the `api/` handlers to return appropriate HTTP status codes.
 - **Immutability**: Domain entities should generally be immutable (final fields) where possible.
