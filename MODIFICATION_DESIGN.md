@@ -9,18 +9,18 @@ The implementation follows Clean Architecture and Feature-First patterns, introd
 The Reporting API sends reports via a `POST` request with a `Content-Type: application/reports+json`. The body consists of a JSON array of report objects. Each object contains metadata (`type`, `url`, `age`, `user_agent`) and a specific `body` containing the report data.
 
 ### Goal
-- Create an endpoint `/_reports/deprecation` to receive deprecation reports.
+- Create a single endpoint `/_reports/default` to receive all browser reports.
 - Validate the `application/reports+json` content type.
 - Parse the JSON array of reports.
-- Filter for and process only `deprecation` types (as per the 1-to-1 mapping requirement).
+- Use pattern matching to process supported report types (starting with `deprecation`).
 - Store reports in an in-memory repository.
 - Ensure the CSRF protection middleware does not block these automated browser requests.
 
 ## Alternatives Considered
+- **1-to-1 URL Mapping**: Having specific URLs for each report type.
+    - *Decision*: Rejected because the Reporting API spec mandates that many reports (deprecations, crashes, interventions) are always sent to the endpoint named `default`.
 - **Generic Report Storage**: Storing all report types in a single table/map with a JSON blob for the body. 
-    - *Decision*: Rejected in favor of "Specific Entities" as requested by the user, which allows for better type safety and validation.
-- **Unified Handler**: A single handler for all `/_reports/*` paths.
-    - *Decision*: Rejected in favor of a 1-to-1 mapping between URLs and report types to keep handlers focused and aligned with the requested URL structure.
+    - *Decision*: Rejected in favor of "Specific Entities" to maintain type safety for supported types.
 
 ## Detailed Design
 
@@ -40,33 +40,34 @@ lib/features/reporting/
 │   ├── repositories/
 │   │   └── report_repository.dart
 │   └── use_cases/
-│       └── submit_deprecation_reports.dart
+│       └── submit_reports.dart
 └── presentation/
     └── handlers/
         └── report_handler.dart
 ```
 
 ### Domain Layer
-- **`Report` (Entity)**: An abstract base class containing common fields: `id`, `type`, `url`, `userAgent`, `age`, and `receivedAt`.
-- **`DeprecationReport` (Entity)**: Extends `Report` with fields from `DeprecationReportBody`: `featureId`, `message`, `sourceFile`, `lineNumber`, `columnNumber`, and `anticipatedRemoval`.
+- **`Report` (Entity)**: An abstract base class containing common fields.
+- **`DeprecationReport` (Entity)**: Extends `Report` with deprecation-specific fields.
 - **`ReportRepository` (Interface)**: Defines methods for saving and retrieving reports.
-- **`SubmitDeprecationReports` (Use Case)**: Handles the logic of processing a list of report maps, converting them to entities, and saving them.
+- **`SubmitReports` (Use Case)**: Processes the list of report maps, uses pattern matching to instantiate the correct entity for supported types, and saves them.
 
 ### Data Layer
-- **`InMemoryReportRepository`**: Implements `ReportRepository` using an in-memory `Map`.
-- **`ReportMapper`**: Provides extensions for converting between raw JSON maps and domain entities.
+- **`InMemoryReportRepository`**: Implements `ReportRepository`.
+- **`ReportMapper`**: Provides extensions for conversion.
 
 ### Presentation Layer
 - **`ReportHandler`**: 
-    - Validates the `Content-Type` header.
-    - Reads the request body as a JSON array.
-    - Invokes the `SubmitDeprecationReports` use case.
-    - Returns `204 No Content` on success.
+    - Validates `Content-Type`.
+    - Reads body as JSON array.
+    - Invokes `SubmitReports` use case.
+    - Returns `204 No Content`.
 
 ### Infrastructure Changes
-- **`AppRouter`**: Register the `POST /_reports/deprecation` route.
-- **`ServiceLocator`**: Wire up the new repository, use case, and handler.
-- **`csrfProtection` Middleware**: Update to exclude paths starting with `/_reports/`.
+- **`AppRouter`**: Register the `POST /_reports/default` route.
+- **`ServiceLocator`**: Wire up `SubmitReports`.
+- **`csrfProtection` Middleware**: Exclude `/_reports/`.
+- **`ReportingHeaders` Middleware**: Set `default` endpoint to `/_reports/default`.
 
 ## Diagrams
 

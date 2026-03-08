@@ -23,7 +23,7 @@ void main() {
     });
 
     test(
-      'POST /_reports/deprecation should succeed without CSRF token',
+      'POST /_reports/default should succeed without CSRF token',
       () async {
         final reports = [
           {
@@ -39,7 +39,7 @@ void main() {
         ];
 
         final response = await http.post(
-          Uri.parse('$baseUrl/_reports/deprecation'),
+          Uri.parse('$baseUrl/_reports/default'),
           headers: {'Content-Type': 'application/reports+json'},
           body: jsonEncode(reports),
         );
@@ -49,10 +49,10 @@ void main() {
     );
 
     test(
-      'POST /_reports/deprecation should fail with wrong Content-Type',
+      'POST /_reports/default should fail with wrong Content-Type',
       () async {
         final response = await http.post(
-          Uri.parse('$baseUrl/_reports/deprecation'),
+          Uri.parse('$baseUrl/_reports/default'),
           headers: {'Content-Type': 'application/json'},
           body: '[]',
         );

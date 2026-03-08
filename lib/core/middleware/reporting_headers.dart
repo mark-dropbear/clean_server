@@ -16,13 +16,10 @@ Middleware reportingHeaders() {
         // Browsers are more consistent with absolute URLs in this header.
         final uri = request.requestedUri;
         final origin = '${uri.scheme}://${uri.authority}';
-        final endpointUrl = '$origin/_reports/deprecation';
+        final endpointUrl = '$origin/_reports/default';
 
         return response.change(
-          headers: {
-            'Reporting-Endpoints':
-                'default="$endpointUrl", deprecation="$endpointUrl"',
-          },
+          headers: {'Reporting-Endpoints': 'default="$endpointUrl"'},
         );
       }
 

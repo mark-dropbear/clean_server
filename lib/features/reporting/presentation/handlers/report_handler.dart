@@ -1,20 +1,20 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-import '../../domain/use_cases/submit_deprecation_reports.dart';
+import '../../domain/use_cases/submit_reports.dart';
 
 /// Handler for browser reporting endpoints.
 class ReportHandler {
-  final SubmitDeprecationReports _submitDeprecationReports;
+  final SubmitReports _submitReports;
 
   /// Creates a [ReportHandler].
-  ReportHandler({required SubmitDeprecationReports submitDeprecationReports})
-    : _submitDeprecationReports = submitDeprecationReports;
+  ReportHandler({required SubmitReports submitReports})
+    : _submitReports = submitReports;
 
-  /// Handles deprecation reports.
+  /// Handles reports sent to the 'default' endpoint.
   ///
   /// Expects a POST request with Content-Type: application/reports+json
   /// containing a JSON array of report objects.
-  Future<Response> handleDeprecation(Request request) async {
+  Future<Response> handleDefault(Request request) async {
     // 1. Validate Content-Type
     final contentType = request.headers['content-type'] ?? '';
     if (!contentType.contains('application/reports+json')) {
@@ -41,7 +41,7 @@ class ReportHandler {
 
       // 3. Process reports
       final reportMaps = json.cast<Map<String, dynamic>>();
-      await _submitDeprecationReports.execute(reportMaps);
+      await _submitReports.execute(reportMaps);
 
       // 4. Return success (204 No Content is standard for Reporting API)
       return Response(204);

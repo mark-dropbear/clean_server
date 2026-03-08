@@ -13,7 +13,7 @@ void main() {
         receivedAt: now,
         featureId: 'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
         message:
-            'Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user\'s experience. For more help, check https://xhr.spec.whatwg.org/.',
+            "Synchronous `XMLHttpRequest` on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.",
         sourceFile: 'http://localhost:8080/frontend/src/index.js',
         lineNumber: 1,
         columnNumber: 976,

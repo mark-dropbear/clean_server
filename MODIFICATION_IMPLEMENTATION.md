@@ -13,6 +13,7 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
 | 2026-03-08 | Phase 4 | Implemented presentation layer handler. Added unit tests. |
 | 2026-03-08 | Phase 5 | Modified CSRF middleware to exclude reporting paths. Wired up dependencies in service locator and router. Added integration tests. |
 | 2026-03-08 | Phase 6 | Updated README.md and GEMINI.md. Final test run passed. Manually verified with curl request. Removed manual test trigger from frontend. |
+| 2026-03-08 | Refactor | Plan to refactor to a single 'default' reporting endpoint. |
 
 ## Phases
 
@@ -73,11 +74,16 @@ This plan outlines the steps to implement the Reporting API (Deprecation Reports
   - [x] Run `dart format .`.
   - [x] Update Journal and commit changes.
 
-### Phase 6: Finalization
+### Phase 6: Finalization & Refactoring
 - [x] Update `README.md` if necessary with information about the Reporting API.
 - [x] Update `GEMINI.md` to reflect the new feature and project structure.
-- [x] Run all tests one last time.
-- [x] Ask the user to inspect the implementation and verify satisfaction.
+- [ ] Refactor Reporting API to use a single `/_reports/default` endpoint.
+  - [ ] Rename/Update `SubmitDeprecationReports` to `SubmitReports`.
+  - [ ] Use pattern matching in Use Case or Handler to support multiple report types.
+  - [ ] Update `AppRouter` and `ReportingHeaders` middleware.
+  - [ ] Update all tests to use the new endpoint and generic use case.
+- [ ] Run all tests one last time.
+- [ ] Ask the user to inspect the implementation and verify satisfaction.
 
 ---
 

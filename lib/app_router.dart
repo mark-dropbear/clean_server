@@ -32,7 +32,7 @@ class AppRouter {
     _router.post('/api/feedback', feedbackHandler.submit);
 
     // Reporting API
-    _router.post('/_reports/deprecation', reportHandler.handleDeprecation);
+    _router.post('/_reports/default', reportHandler.handleDefault);
 
     // Task List Routes
     _router.get('/task-lists', taskListHandler.list);

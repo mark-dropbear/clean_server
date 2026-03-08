@@ -8,7 +8,7 @@ import '../features/feedback/presentation/handlers/feedback_handler.dart';
 import '../features/pages/presentation/handlers/web_handler.dart';
 import '../features/reporting/data/repositories/in_memory_report_repository.dart';
 import '../features/reporting/domain/repositories/report_repository.dart';
-import '../features/reporting/domain/use_cases/submit_deprecation_reports.dart';
+import '../features/reporting/domain/use_cases/submit_reports.dart';
 import '../features/reporting/presentation/handlers/report_handler.dart';
 import '../features/tasks/data/repositories/in_memory_task_list_repository.dart';
 import '../features/tasks/data/repositories/in_memory_task_repository.dart';
@@ -80,7 +80,7 @@ void setupLocator() {
 
   // Reporting Use Cases
   getIt.registerLazySingleton(
-    () => SubmitDeprecationReports(getIt<ReportRepository>()),
+    () => SubmitReports(getIt<ReportRepository>()),
   );
 
   // Handlers
@@ -115,7 +115,7 @@ void setupLocator() {
 
   getIt.registerLazySingleton(
     () => ReportHandler(
-      submitDeprecationReports: getIt<SubmitDeprecationReports>(),
+      submitReports: getIt<SubmitReports>(),
     ),
   );
 }

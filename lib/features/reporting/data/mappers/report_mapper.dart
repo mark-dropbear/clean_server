@@ -1,3 +1,4 @@
+import 'package:slugid/slugid.dart';
 import '../../domain/entities/deprecation_report.dart';
 
 /// Extension on [DeprecationReport] to provide mapping logic.
@@ -19,9 +20,36 @@ extension DeprecationReportMapper on DeprecationReport {
       'anticipated_removal': anticipatedRemoval?.toIso8601String(),
     };
   }
+
+  /// Creates a [DeprecationReport] from the official browser Reporting API payload.
+  static DeprecationReport fromReportingApi(
+    Map<String, dynamic> map, {
+    required DateTime receivedAt,
+  }) {
+    final body = map['body'] as Map<String, dynamic>? ?? {};
+
+    return DeprecationReport(
+      id: Slugid.nice().toString(),
+      url: map['url'] as String? ?? '',
+      userAgent: map['user_agent'] as String?,
+      age: map['age'] as int? ?? 0,
+      receivedAt: receivedAt,
+      featureId: body['id'] as String? ?? '',
+      message: body['message'] as String? ?? '',
+      sourceFile: body['sourceFile'] as String?,
+      lineNumber: body['lineNumber'] as int?,
+      columnNumber: body['columnNumber'] as int?,
+      anticipatedRemoval: _parseDateTime(body['anticipatedRemoval'] as String?),
+    );
+  }
+
+  static DateTime? _parseDateTime(String? value) {
+    if (value == null) return null;
+    return DateTime.tryParse(value);
+  }
 }
 
-/// Creates a [DeprecationReport] from a [Map].
+/// Creates a [DeprecationReport] from an internal storage [Map].
 DeprecationReport deprecationReportFromMap(Map<String, dynamic> map) {
   return DeprecationReport(
     id: map['id'] as String,
