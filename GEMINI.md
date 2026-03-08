@@ -8,67 +8,52 @@
 - **Framework**: `shelf`, `shelf_router`, `shelf_static`
 - **Dependency Injection**: `get_it`
 - **Template Engine**: `mustache_template`
-- **Data Serialization**: Manual mapping with `Mappers`
+- **Data Serialization**: Extension-based `toMap` and top-level `fromMap` functions.
 - **Testing**: `test`, `http`
-- **Linting**: `lints/recommended`
+- **Linting**: Custom strict configuration (see `analysis_options.yaml`).
 
 ## Architecture
 The project is organized into layers to separate concerns:
 
-- **`bin/`**: The application entry point (`clean_server.dart`), which handles CLI argument parsing (port, verbose logging) and initializes the `App`.
-- **`lib/api/`**: Contains the `shelf` request handlers, routing logic, and rendering services.
-  - `api_router.dart`: Centralized `Router` that wires all endpoints, including static asset serving at `/assets/`.
-  - `task_list_handler.dart`: Decoupled logic for task list endpoints.
-  - `task_handler.dart`: Decoupled logic for task endpoints.
-  - `web_handler.dart`: Handler for HTML pages.
-  - `view_renderer.dart`: Service that encapsulates template loading, partial resolution, and rendering using Mustache.
-- **`lib/domain/`**: The core business logic, independent of external frameworks.
-  - `entities/`: Core data models (e.g., `Task`, `TaskList`).
-  - `use_cases/`: Specific business actions (e.g., `CreateTask`, `GetTaskList`).
-  - `repositories/`: Abstract interfaces for data persistence.
-  - `exceptions.dart`: Custom domain-specific exceptions.
-- **`lib/data/`**: Implementation details of the domain layer.
-  - `repositories/`: In-memory implementations of the repository interfaces.
-  - `mappers/`: Logic for converting between domain entities and Map/JSON structures.
-- **`lib/di/`**: `service_locator.dart` defines how dependencies are wired together using `GetIt`.
-- **`web/`**: Contains assets and templates for the web front end.
-  - `assets/`: Static files (CSS, JS) served at `/assets/`. Uses **ImportMaps** for modern module resolution without a build pipeline.
-  - `templates/`: Mustache templates for SSR. Includes a `partials/` subdirectory for reusable components.
+- **`bin/`**: CLI entry point (`clean_server.dart`). Uses `developer.log` for instrumentation.
+- **`lib/api/`**: Request handlers, routing logic, and rendering services.
+  - `api_router.dart`: Centralized `Router` with static asset mounting at `/assets/`.
+  - `task_list_handler.dart`: JSON logic for task list endpoints.
+  - `task_handler.dart`: JSON logic for task endpoints.
+  - `web_handler.dart`: Handler for SSR HTML pages.
+  - `view_renderer.dart`: Centralized template/partial resolution and rendering.
+- **`lib/domain/`**: Pure business logic (entities, use cases, repository interfaces).
+  - `entities/`: `@immutable` models (using `package:meta`).
+  - `use_cases/`: Orchestrate domain logic and handle existence/validation checks.
+- **`lib/data/`**: Implementation details.
+  - `repositories/`: In-memory implementations of domain interfaces.
+  - `mappers/`: Mapping logic decoupled from entities via extensions.
+- **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
+- **`web/`**: Assets and templates for the web frontend.
 
 ## Building and Running
 
 ### Commands
 - **Run the Server**: `dart run bin/clean_server.dart`
-  - *Defaults to port 8080.*
-  - *Use `--port <port>` to change the port.*
-  - *Use `--verbose" or `-v` for request logging.*
 - **Run Tests**: `dart test`
 - **Static Analysis**: `dart analyze`
 - **Format Code**: `dart format .`
 
-### Dependencies
-Dependencies are managed via `pubspec.yaml`. Run `dart pub get` to install them.
-
 ## Development Conventions
 
 ### Web & Frontend Strategy
-- **Server-Side Rendering (SSR)**: Use Mustache templates located in `web/templates/`. Prefer partials for shared components like the `importmap`.
-- **Modern Frontend**: No front-end build pipeline is used. Use native JavaScript modules and `ImportMaps` (located in a shared partial) to manage dependencies.
-- **Security**: Templates default to `htmlEscapeValues: true` in the `ViewRenderer` to prevent XSS.
+- **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
+- **Modern Frontend**: Native JS modules and `ImportMaps` (via shared partial). No build pipeline.
+- **Security**: Mandatory HTML escaping in templates and explicit exception handling (`on Exception catch (e)`).
 
 ### Coding Style
 - Follows the [Official Dart Style Guide](https://dart.dev/guides/language/effective-dart/style).
-- **Naming**: `PascalCase` for classes, `camelCase` for variables/methods, `snake_case` for files.
-- **Lints**: Adheres to `package:lints/recommended.yaml`.
-
-### Testing Practices
-- **Domain Tests**: Located in `test/domain/`, focusing on entities and use case logic.
-- **API Tests**: Located in `test/api/`, using `http` to perform end-to-end integration tests against the running or mocked handlers. Includes tests for HTML rendering and static asset delivery.
+- **Strict Linting**: The project uses a high-bar linting configuration. Always run `dart analyze` and `dart fix` before committing.
+- **Documentation**: All public members must have concise `///` doc comments.
+- **Logging**: Use `dart:developer`'s `log` function instead of `print` in production code.
 
 ### Key Patterns
-- **Dependency Injection**: All handlers, services (like `ViewRenderer`), use cases, and repositories should be registered in `lib/di/service_locator.dart` and accessed via `getIt<T>()`.
-- **Routing**: Centralized routing in `ApiRouter` using flat, explicit parameters. Static files are mounted at `/assets/`.
-- **Error Handling**: 
-    - API: Throw domain-specific exceptions in use cases and catch them in handlers to return HTTP status codes.
-    - Web: Handlers catch rendering errors and display a custom `error_500.mustache` page.
-- **Immutability**: Domain entities should generally be immutable (final fields) where possible.
+- **Standardized Repositories**: Use consistent naming (e.g., `getById`, `save`, `delete`).
+- **Use Case Responsibility**: Use cases are responsible for domain logic, including existence checks and throwing domain exceptions. Handlers focus on HTTP orchestration.
+- **Immutability**: All domain entities are `@immutable`. Use `copyWith` for creating modified instances.
+- **Data Mapping**: Mapping logic lives in the `data` layer. Entities are extended with `toMap()` for serialization, while top-level `fromMap` functions handle de-serialization.
