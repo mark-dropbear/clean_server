@@ -1,7 +1,7 @@
 # GEMINI.md - Project Context for `clean_server`
 
 ## Project Overview
-`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages.
+`clean_server` is a Dart-based server application built with the `shelf` framework. It follows **Clean Architecture** principles to provide a maintainable and testable RESTful API for managing tasks and task lists, as well as server-side rendered (SSR) HTML pages. It also features a "Contact Us" end-to-end implementation.
 
 ### Main Technologies
 - **Language**: Dart (SDK ^3.11.0)
@@ -22,6 +22,7 @@ The project is organized into layers to separate concerns:
   - `api_router.dart`: Centralized `Router` with static asset mounting at `/frontend/`.
   - `task_list_handler.dart`: JSON logic for task list endpoints.
   - `task_handler.dart`: JSON logic for task endpoints.
+  - `feedback_handler.dart`: JSON logic for feedback submissions.
   - `web_handler.dart`: Handler for SSR HTML pages.
   - `view_renderer.dart`: Centralized template/partial resolution and rendering.
 - **`lib/domain/`**: Pure business logic (entities, use cases, repository interfaces).
@@ -33,7 +34,7 @@ The project is organized into layers to separate concerns:
 - **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
 - **`lib/core/`**: Shared infrastructure logic like logging.
 - **`web/`**: Assets, templates, and frontend source code.
-  - `templates/`: SSR Mustache templates.
+  - `templates/`: SSR Mustache templates (e.g., `home`, `demo`, `contact`).
   - `frontend/`: Dedicated npm package for frontend components.
     - `src/`: Source JS/CSS files for Lit components.
     - `dist/`: Generated assets and dynamic import map (`importmap.js`).
@@ -68,6 +69,7 @@ The project is organized into layers to separate concerns:
 - **Mapping**:
   - `TaskList` $\rightarrow$ `https://schema.org/ItemList`
   - `Task` $\rightarrow$ `https://schema.org/Action`
+  - `FeedbackForm` $\rightarrow$ `https://schema.org/Message`
 - **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
 
 ### Frontend Development (Lit & JSPM)
@@ -77,7 +79,7 @@ The project is organized into layers to separate concerns:
 
 ### Global and Page Components
 - **Global App Container**: The `<app-container>` Lit component handles global concerns (e.g., auth, theme, progressive enhancement) and is present on all pages.
-- **Page Components**: Each page has a dedicated Lit component (e.g., `<home-page>`, `<demo-page>`) that handles page-specific logic, event handlers, and importing page specific CSS and JavaScript modules.
+- **Page Components**: Each page has a dedicated Lit component (e.g., `<home-page>`, `<demo-page>`, `<contact-page>`) that handles page-specific logic, event handlers, and importing page specific CSS and JavaScript modules.
 - **Progressive Enhancement**: The `<app-container>` updates the `data-js` attribute on the `<body>` tag to `true` upon initialization, signaling that JavaScript is active.
 
 ### Web & Frontend Strategy
