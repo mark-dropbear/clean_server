@@ -64,8 +64,10 @@ void main() {
 
     test('ImportMap is present in HTML', () async {
       final response = await http.get(Uri.parse('$baseUrl/'));
-      expect(response.body, contains('<script type="importmap">'));
-      expect(response.body, contains('"utils": "/assets/js/utils.js"'));
+      expect(
+        response.body,
+        contains('<script src="/frontend/importmap.js"></script>'),
+      );
     });
 
     test('Renders 500 error page on template failure', () async {

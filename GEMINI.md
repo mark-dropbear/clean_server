@@ -10,6 +10,7 @@
 - **Template Engine**: `mustache_template`
 - **Logging**: `package:logging` with hierarchical levels and stdout/stderr output.
 - **Data Serialization**: Extension-based `toMap`, `toJsonLd` and top-level `fromMap` functions.
+- **Frontend**: Lit components in a dedicated npm package (`frontend/`), integrated via native ESM and import maps (JSPM).
 - **Testing**: `test`, `http`
 - **Linting**: Custom strict configuration (see `analysis_options.yaml`).
 
@@ -18,7 +19,7 @@ The project is organized into layers to separate concerns:
 
 - **`bin/`**: CLI entry point (`clean_server.dart`). Initializes the logging system.
 - **`lib/api/`**: Request handlers, routing logic, and rendering services.
-  - `api_router.dart`: Centralized `Router` with static asset mounting at `/assets/`.
+  - `api_router.dart`: Centralized `Router` with static asset mounting at `/assets/` and `/frontend/`.
   - `task_list_handler.dart`: JSON logic for task list endpoints.
   - `task_handler.dart`: JSON logic for task endpoints.
   - `web_handler.dart`: Handler for SSR HTML pages.
@@ -32,6 +33,9 @@ The project is organized into layers to separate concerns:
 - **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
 - **`lib/core/`**: Shared infrastructure logic like logging.
 - **`web/`**: Assets and templates for the web frontend.
+- **`frontend/`**: Dedicated npm package for frontend components.
+  - `src/`: Source JS/CSS files for Lit components.
+  - `dist/`: Generated assets and dynamic import map (`importmap.js`).
 
 ## Building and Running
 
@@ -39,6 +43,10 @@ The project is organized into layers to separate concerns:
 - **Run the Server**: `dart run bin/clean_server.dart`
   - Use `--verbose` or `-v` to set the log level to `ALL` (includes request logs and database access).
   - Default log level is `INFO`.
+- **Build Frontend**:
+  - `cd frontend && npm install`
+  - Development: `npm run build:dev`
+  - Production: `npm run build:prod`
 - **Run Tests**: `dart test`
   - To generate a coverage report: `dart test --coverage=coverage/`
 - **Static Analysis**: `dart analyze`
@@ -54,21 +62,21 @@ The project is organized into layers to separate concerns:
 - **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
 - **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly, verifying logic and routing without the overhead of a real HTTP server.
 
-### Lit Components (Client-Side Rendering)
-- **Modular UI**: The project uses **Lit** for building reusable web components.
-- **Components**:
-  - `<task-item>`: Renders a single task with reactive properties for name, description, and status.
-  - `<task-list>`: A container component that parses JSON-LD from a slotted `<script>` tag and renders a collection of `<task-item>` components.
-- **Location**: Components are located in `web/assets/js/components/`.
+### JSON-LD Support
+- **Schema.org Integration**: Entities support JSON-LD serialization via `toJsonLd()` extension methods.
+- **Mapping**:
+  - `TaskList` $\rightarrow$ `https://schema.org/ItemList`
+  - `Task` $\rightarrow$ `https://schema.org/Action`
+- **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
 
-### Demo Route
-- **Path**: `/demo`
-- **Purpose**: Showcases the integration of Clean Architecture, JSON-LD, and Lit components.
-- **Implementation**: The `WebHandler.demo` method generates dummy domain data, serializes it using the JSON-LD mapper, and serves a page using the `demo.mustache` template.
+### Frontend Development (Lit & JSPM)
+- **Component Development**: Build UI components using **Lit** in the `frontend/` directory.
+- **Import Maps**: The project uses **JSPM** to automatically generate a dynamic import map (`importmap.js`). This script is loaded in templates to resolve bare specifiers like `lit` and `frontend` at runtime.
+- **Integration**: The server mounts `frontend/dist/` to serve these assets. Components are loaded in templates using standard ESM `import` statements.
 
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
-- **Modern Frontend**: Native JS modules and `ImportMaps` (via shared partial). No build pipeline.
+- **Modern Frontend**: Native JS modules and dynamic `ImportMaps` (via shared partial). No heavy build pipeline for production delivery.
 - **Security**: Mandatory HTML escaping in templates and explicit exception handling (`on Exception catch (e, st)`).
 
 ### Logging Strategy

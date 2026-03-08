@@ -1,0 +1,19 @@
+{
+  "name": "frontend",
+  "version": "dev",
+  "description": "Clean Architecture Front End package",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "build:dev": "jspm build -C development --integrity",
+    "build:prod": "jspm build -C production --integrity"
+  },
+  "dependencies": {
+    "lit": "^3.3.2"
+  },
+  "devDependencies": {
+    "jspm": "^4.4.0"
+  }
+}

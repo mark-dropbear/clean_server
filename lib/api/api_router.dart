@@ -21,6 +21,7 @@ class ApiRouter {
 
     // Static Assets
     _router.mount('/assets/', createStaticHandler('web/assets'));
+    _router.mount('/frontend/', createStaticHandler('frontend/dist'));
 
     // Task List Routes
     _router.get('/task-lists', taskListHandler.list);

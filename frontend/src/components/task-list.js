@@ -1,4 +1,5 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
+import componentStyles from './task-list.css' with { type: 'css' };
 import './task-item.js';
 
 export class TaskList extends LitElement {
@@ -6,27 +7,7 @@ export class TaskList extends LitElement {
     _items: { state: true },
   };
 
-  static styles = css`
-    :host {
-      display: block;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 1rem;
-    }
-    .list-header {
-      margin-bottom: 2rem;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 1rem;
-    }
-    h2 {
-      margin: 0;
-      color: #2d3748;
-    }
-    .description {
-      color: #718096;
-      margin-top: 0.5rem;
-    }
-  `;
+  static styles = [componentStyles];
 
   constructor() {
     super();
