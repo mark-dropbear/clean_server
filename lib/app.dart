@@ -4,6 +4,7 @@ import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'di/service_locator.dart';
 import 'api/task_list_handler.dart';
+import 'api/middleware/url_normalization.dart';
 
 /// The main application class that manages the server lifecycle.
 class App {
@@ -21,10 +22,10 @@ class App {
     final router = Router();
 
     // We mount the task list handler under the /task-lists prefix
-    router.mount('/task-lists/', getIt<TaskListHandler>().router.call);
+    router.mount('/task-lists', getIt<TaskListHandler>().router.call);
 
     // 3. Configure the middleware and handler
-    var pipeline = const Pipeline();
+    var pipeline = const Pipeline().addMiddleware(stripTrailingSlash());
     if (verbose) {
       pipeline = pipeline.addMiddleware(logRequests());
     }
