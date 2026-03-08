@@ -7,31 +7,33 @@
     {{> importmap}}
     <script type="module">
         import 'frontend';
+        import 'frontend/pages/demo.js';
     </script>
-    <link rel="stylesheet" href="/assets/css/style.css">
   </head>
   <body data-js="false">
     <app-container>
-      <header>
-        <nav>
-          <a href="/">Home</a> | <a href="/demo">Demo</a>
-        </nav>
-      </header>
+      <demo-page>
+        <header>
+          <nav>
+            <a href="/">Home</a> | <a href="/demo">Demo</a>
+          </nav>
+        </header>
 
-      <main>
-        <h1>Clean Server Demo</h1>
-        <p>This page demonstrates client-side rendering of a task list using <strong>Lit</strong> components and <strong>JSON-LD</strong> metadata.</p>
-          
-        <task-list>
-          <script type="application/ld+json">
-            {{{jsonLd}}}
-          </script>
-        </task-list>
-      </main>
+        <main>
+          <h1>Clean Server Demo</h1>
+          <p>This page demonstrates client-side rendering of a task list using <strong>Lit</strong> components and <strong>JSON-LD</strong> metadata.</p>
+            
+          <task-list>
+            <script type="application/ld+json">
+              {{{jsonLd}}}
+            </script>
+          </task-list>
+        </main>
 
-      <footer>
-        <p>&copy; 2026 Clean Server Project</p>
-      </footer>
+        <footer>
+          <p>&copy; 2026 Clean Server Project</p>
+        </footer>
+      </demo-page>
     </app-container>
   </body>
 </html>

@@ -46,19 +46,12 @@ void main() {
       expect(response.body, isNot(contains('<script>alert(1)</script>!')));
     });
 
-    test('GET /assets/css/style.css returns static asset', () async {
+    test('GET /frontend/src/index.js returns frontend asset', () async {
       final response = await http.get(
-        Uri.parse('$baseUrl/assets/css/style.css'),
+        Uri.parse('$baseUrl/frontend/src/index.js'),
       );
       expect(response.statusCode, 200);
-      expect(response.body, contains('background-color: #f0f2f5;'));
-      expect(response.headers['content-type'], contains('text/css'));
-    });
-
-    test('GET /assets/js/main.js returns static asset', () async {
-      final response = await http.get(Uri.parse('$baseUrl/assets/js/main.js'));
-      expect(response.statusCode, 200);
-      expect(response.body, contains("import { formatTime } from 'utils';"));
+      expect(response.body, contains("AppContainer"));
       expect(response.headers['content-type'], anyOf(contains('javascript')));
     });
 

@@ -4,7 +4,9 @@
   "description": "Clean Architecture Front End package",
   "type": "module",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./pages/demo.js": "./src/pages/demo.js",
+    "./pages/home.js": "./src/pages/home.js"
   },
   "scripts": {
     "build:dev": "jspm build -C development --integrity",

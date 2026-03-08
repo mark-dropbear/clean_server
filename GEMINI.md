@@ -74,10 +74,10 @@ The project is organized into layers to separate concerns:
 - **Import Maps**: The project uses **JSPM** to automatically generate a dynamic import map (`importmap.js`). This script is loaded in templates to resolve bare specifiers like `lit` and `frontend` at runtime.
 - **Integration**: The server mounts `frontend/dist/` to serve these assets. Components are loaded in templates using standard ESM `import` statements.
 
-### Global App Container
-- **Purpose**: Handles global and cross-cutting concerns across the application (e.g., auth, theme, progressive enhancement).
-- **Implementation**: The `<app-container>` Lit component is placed immediately after the `<body>` tag in all templates.
-- **Progressive Enhancement**: It updates the `data-js` attribute on the `<body>` tag from `false` to `true` upon initialization, enabling CSS-based shifts for non-JS environments.
+### Global and Page Components
+- **Global App Container**: The `<app-container>` Lit component handles global concerns (e.g., auth, theme, progressive enhancement) and is present on all pages.
+- **Page Components**: Each page has a dedicated Lit component (e.g., `<home-page>`, `<demo-page>`) that handles page-specific logic, event handlers, and importing page specific CSS and JavaScript modules.
+- **Progressive Enhancement**: The `<app-container>` updates the `data-js` attribute on the `<body>` tag to `true` upon initialization, signaling that JavaScript is active.
 
 ### Web & Frontend Strategy
 - **SSR**: Mustache templates in `web/templates/`. Partial resolution is handled by `ViewRenderer`.
