@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:shelf/shelf.dart';
-import 'package:shelf_router/shelf_router.dart';
 import '../domain/exceptions.dart';
 import '../domain/use_cases/create_task.dart';
 import '../domain/use_cases/get_task.dart';
@@ -30,27 +29,7 @@ class TaskHandler {
        _deleteTask = deleteTask,
        _taskRepository = taskRepository;
 
-  Router get router {
-    final router = Router();
-
-    router.get('/', _listByTaskList);
-    router.post('/', _create);
-    router.get('/<id>', _get);
-    router.put('/<id>', _update);
-    router.delete('/<id>', _delete);
-
-    return router;
-  }
-
-  Future<Response> _listByTaskList(Request request) async {
-    final taskListId = request.context['taskListId'] as String?;
-
-    if (taskListId == null) {
-      return Response.badRequest(
-        body: jsonEncode({'error': 'Missing TaskList ID'}),
-      );
-    }
-
+  Future<Response> listByTaskList(Request request, String taskListId) async {
     final tasks = await _taskRepository.listByTaskListId(taskListId);
     final json = tasks.map(TaskMapper.toMap).toList();
     return Response.ok(
@@ -59,9 +38,13 @@ class TaskHandler {
     );
   }
 
-  Future<Response> _get(Request request, String id) async {
+  Future<Response> get(
+    Request request,
+    String taskListId,
+    String taskId,
+  ) async {
     try {
-      final task = await _getTask.execute(id);
+      final task = await _getTask.execute(taskId);
       return Response.ok(
         jsonEncode(TaskMapper.toMap(task)),
         headers: {'Content-Type': 'application/json'},
@@ -76,16 +59,8 @@ class TaskHandler {
     }
   }
 
-  Future<Response> _create(Request request) async {
+  Future<Response> create(Request request, String taskListId) async {
     try {
-      final taskListId = request.context['taskListId'] as String?;
-
-      if (taskListId == null) {
-        return Response.badRequest(
-          body: jsonEncode({'error': 'Missing TaskList ID'}),
-        );
-      }
-
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
@@ -110,13 +85,17 @@ class TaskHandler {
     }
   }
 
-  Future<Response> _update(Request request, String id) async {
+  Future<Response> update(
+    Request request,
+    String taskListId,
+    String taskId,
+  ) async {
     try {
       final body = await request.readAsString();
       final data = jsonDecode(body) as Map<String, dynamic>;
 
       final task = await _updateTask.execute(
-        id,
+        taskId,
         title: data['title'] as String?,
         description: data['description'] as String?,
         isCompleted: data['is_completed'] as bool?,
@@ -138,9 +117,13 @@ class TaskHandler {
     }
   }
 
-  Future<Response> _delete(Request request, String id) async {
+  Future<Response> delete(
+    Request request,
+    String taskListId,
+    String taskId,
+  ) async {
     try {
-      await _deleteTask.execute(id);
+      await _deleteTask.execute(taskId);
       return Response(204);
     } on TaskNotFoundException catch (e) {
       return Response.notFound(jsonEncode({'error': e.message}));

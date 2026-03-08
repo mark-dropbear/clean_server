@@ -71,7 +71,6 @@ void setupLocator() {
       listTaskLists: getIt<ListTaskLists>(),
       updateTaskList: getIt<UpdateTaskList>(),
       deleteTaskList: getIt<DeleteTaskList>(),
-      taskHandler: getIt<TaskHandler>(),
     ),
   );
 }

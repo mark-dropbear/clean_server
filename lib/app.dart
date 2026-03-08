@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
-import 'package:shelf_router/shelf_router.dart';
 import 'di/service_locator.dart';
 import 'api/task_list_handler.dart';
+import 'api/task_handler.dart';
+import 'api/api_router.dart';
 import 'api/middleware/url_normalization.dart';
 
 /// The main application class that manages the server lifecycle.
@@ -19,10 +20,10 @@ class App {
     setupLocator();
 
     // 2. Build the router
-    final router = Router();
-
-    // We mount the task list handler under the /task-lists prefix
-    router.mount('/task-lists', getIt<TaskListHandler>().router.call);
+    final router = ApiRouter(
+      taskListHandler: getIt<TaskListHandler>(),
+      taskHandler: getIt<TaskHandler>(),
+    );
 
     // 3. Configure the middleware and handler
     var pipeline = const Pipeline().addMiddleware(stripTrailingSlash());
