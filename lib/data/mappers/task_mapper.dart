@@ -12,6 +12,19 @@ extension TaskMapper on Task {
       'is_completed': isCompleted,
     };
   }
+
+  /// Converts this [Task] to a JSON-LD Map compatible with Schema.org Action.
+  Map<String, dynamic> toJsonLd() {
+    return {
+      '@type': 'Action',
+      '@id': id,
+      'name': title,
+      'description': description,
+      'actionStatus': isCompleted
+          ? 'https://schema.org/CompletedActionStatus'
+          : 'https://schema.org/ActiveActionStatus',
+    };
+  }
 }
 
 /// Creates a [Task] from a [Map].

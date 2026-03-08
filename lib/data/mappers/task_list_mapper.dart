@@ -12,6 +12,20 @@ extension TaskListMapper on TaskList {
       'tasks': tasks.map((t) => t.toMap()).toList(),
     };
   }
+
+  /// Converts this [TaskList] to a JSON-LD Map compatible with Schema.org ItemList.
+  Map<String, dynamic> toJsonLd() {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      '@id': id,
+      'name': title,
+      'description': description,
+      'itemListElement': tasks
+          .map((task) => {'@type': 'ListItem', 'item': task.toJsonLd()})
+          .toList(),
+    };
+  }
 }
 
 /// Creates a [TaskList] from a [Map].
