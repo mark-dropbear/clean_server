@@ -10,7 +10,7 @@
 - **Template Engine**: `mustache_template`
 - **Logging**: `package:logging` with hierarchical levels and stdout/stderr output.
 - **Data Serialization**: Extension-based `toMap`, `toJsonLd` and top-level `fromMap` functions.
-- **Frontend**: Lit components in a dedicated npm package (`frontend/`), integrated via native ESM and import maps (JSPM).
+- **Frontend**: Lit components in a dedicated npm package (`web/frontend/`), integrated via native ESM and import maps (JSPM).
 - **Testing**: `test`, `http`
 - **Linting**: Custom strict configuration (see `analysis_options.yaml`).
 
@@ -19,7 +19,7 @@ The project is organized into layers to separate concerns:
 
 - **`bin/`**: CLI entry point (`clean_server.dart`). Initializes the logging system.
 - **`lib/api/`**: Request handlers, routing logic, and rendering services.
-  - `api_router.dart`: Centralized `Router` with static asset mounting at `/assets/` and `/frontend/`.
+  - `api_router.dart`: Centralized `Router` with static asset mounting at `/frontend/`.
   - `task_list_handler.dart`: JSON logic for task list endpoints.
   - `task_handler.dart`: JSON logic for task endpoints.
   - `web_handler.dart`: Handler for SSR HTML pages.
@@ -32,10 +32,11 @@ The project is organized into layers to separate concerns:
   - `mappers/`: Mapping logic decoupled from entities via extensions. Supports standard JSON and JSON-LD (Schema.org).
 - **`lib/di/`**: `service_locator.dart` manages dependency wiring with `GetIt`.
 - **`lib/core/`**: Shared infrastructure logic like logging.
-- **`web/`**: Assets and templates for the web frontend.
-- **`frontend/`**: Dedicated npm package for frontend components.
-  - `src/`: Source JS/CSS files for Lit components.
-  - `dist/`: Generated assets and dynamic import map (`importmap.js`).
+- **`web/`**: Assets, templates, and frontend source code.
+  - `templates/`: SSR Mustache templates.
+  - `frontend/`: Dedicated npm package for frontend components.
+    - `src/`: Source JS/CSS files for Lit components.
+    - `dist/`: Generated assets and dynamic import map (`importmap.js`).
 
 ## Building and Running
 
@@ -44,7 +45,7 @@ The project is organized into layers to separate concerns:
   - Use `--verbose` or `-v` to set the log level to `ALL` (includes request logs and database access).
   - Default log level is `INFO`.
 - **Build Frontend**:
-  - `cd frontend && npm install`
+  - `cd web/frontend && npm install`
   - Development: `npm run build:dev`
   - Production: `npm run build:prod`
 - **Run Tests**: `dart test`
@@ -70,9 +71,9 @@ The project is organized into layers to separate concerns:
 - **Context**: All JSON-LD outputs include the `@context: https://schema.org`.
 
 ### Frontend Development (Lit & JSPM)
-- **Component Development**: Build UI components using **Lit** in the `frontend/` directory.
+- **Component Development**: Build UI components using **Lit** in the `web/frontend/` directory.
 - **Import Maps**: The project uses **JSPM** to automatically generate a dynamic import map (`importmap.js`). This script is loaded in templates to resolve bare specifiers like `lit` and `frontend` at runtime.
-- **Integration**: The server mounts `frontend/dist/` to serve these assets. Components are loaded in templates using standard ESM `import` statements.
+- **Integration**: The server mounts `web/frontend/dist/` to serve these assets. Components are loaded in templates using standard ESM `import` statements.
 
 ### Global and Page Components
 - **Global App Container**: The `<app-container>` Lit component handles global concerns (e.g., auth, theme, progressive enhancement) and is present on all pages.

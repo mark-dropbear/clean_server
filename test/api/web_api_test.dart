@@ -51,7 +51,7 @@ void main() {
         Uri.parse('$baseUrl/frontend/src/index.js'),
       );
       expect(response.statusCode, 200);
-      expect(response.body, contains("AppContainer"));
+      expect(response.body, contains('AppContainer'));
       expect(response.headers['content-type'], anyOf(contains('javascript')));
     });
 
