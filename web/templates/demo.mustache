@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lit Component Demo</title>
@@ -9,27 +9,29 @@
         import 'frontend';
     </script>
     <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-    <header>
+  </head>
+  <body data-js="false">
+    <app-container>
+      <header>
         <nav>
-            <a href="/">Home</a> | <a href="/demo">Demo</a>
+          <a href="/">Home</a> | <a href="/demo">Demo</a>
         </nav>
-    </header>
+      </header>
 
-    <main>
+      <main>
         <h1>Clean Server Demo</h1>
         <p>This page demonstrates client-side rendering of a task list using <strong>Lit</strong> components and <strong>JSON-LD</strong> metadata.</p>
-        
+          
         <task-list>
-            <script type="application/ld+json">
-                {{{jsonLd}}}
-            </script>
+          <script type="application/ld+json">
+            {{{jsonLd}}}
+          </script>
         </task-list>
-    </main>
+      </main>
 
-    <footer>
+      <footer>
         <p>&copy; 2026 Clean Server Project</p>
-    </footer>
-</body>
+      </footer>
+    </app-container>
+  </body>
 </html>

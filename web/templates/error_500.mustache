@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internal Server Error</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     {{> importmap }}
-</head>
-<body>
-    <div class="container">
+    <script type="module">
+      import 'frontend';
+    </script>
+  </head>
+  <body data-js="false">
+    <app-container>
+      <div class="container">
         <h1 style="color: #dc3545;">500</h1>
         <h2>Internal Server Error</h2>
         <p>Something went wrong on our end.</p>
         <div style="text-align: left; background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-top: 1rem; font-family: monospace; font-size: 0.8rem; overflow-x: auto;">
-            {{message}}
+          {{message}}
         </div>
         <p style="margin-top: 2rem;"><a href="/" style="color: #007bff; text-decoration: none;">&larr; Back to Home</a></p>
-    </div>
-</body>
+      </div>
+    </app-container>
+  </body>
 </html>
