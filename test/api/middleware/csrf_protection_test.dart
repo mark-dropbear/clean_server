@@ -42,7 +42,8 @@ void main() {
       final response = await handler(request);
 
       expect(response.statusCode, equals(403));
-      final body = jsonDecode(await response.readAsString()) as Map<String, dynamic>;
+      final body =
+          jsonDecode(await response.readAsString()) as Map<String, dynamic>;
       expect(body['error'], contains('CSRF token mismatch or missing'));
     });
 

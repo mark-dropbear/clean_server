@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:clean_server/app.dart';
@@ -69,6 +70,51 @@ void main() {
         response.body,
         contains('<script src="/frontend/importmap.js"></script>'),
       );
+    });
+
+    group('CSRF Protection Integration', () {
+      test('POST /api/feedback fails without CSRF token', () async {
+        final response = await http.post(
+          Uri.parse('$baseUrl/api/feedback'),
+          body: jsonEncode({
+            'name': 'John',
+            'email': 'john@example.com',
+            'message': 'This is a long enough message.',
+          }),
+        );
+
+        expect(response.statusCode, equals(403));
+        expect(response.body, contains('CSRF token mismatch or missing'));
+      });
+
+      test('POST /api/feedback succeeds with CSRF token', () async {
+        // 1. Get the token from a GET request
+        final getRes = await http.get(Uri.parse('$baseUrl/'));
+        final setCookie = getRes.headers['set-cookie'];
+        expect(setCookie, contains('XSRF-TOKEN='));
+
+        final token = setCookie!
+            .split(';')
+            .firstWhere((c) => c.trim().startsWith('XSRF-TOKEN='))
+            .split('=')[1];
+
+        // 2. Submit feedback with token in header and cookie
+        final postRes = await http.post(
+          Uri.parse('$baseUrl/api/feedback'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': 'XSRF-TOKEN=$token',
+            'x-xsrf-token': token,
+          },
+          body: jsonEncode({
+            'name': 'John Doe',
+            'email': 'john@example.com',
+            'message': 'This is a long enough message.',
+          }),
+        );
+
+        expect(postRes.statusCode, equals(201));
+      });
     });
 
     test('Renders 500 error page on template failure', () async {

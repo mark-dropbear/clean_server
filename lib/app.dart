@@ -6,6 +6,7 @@ import 'package:shelf/shelf_io.dart';
 
 import 'api/api_router.dart';
 import 'api/feedback_handler.dart';
+import 'api/middleware/csrf_protection.dart';
 import 'api/middleware/url_normalization.dart';
 import 'api/task_handler.dart';
 import 'api/task_list_handler.dart';
@@ -39,7 +40,9 @@ class App {
     );
 
     // 3. Configure the middleware and handler
-    var pipeline = const Pipeline().addMiddleware(stripTrailingSlash());
+    var pipeline = const Pipeline()
+        .addMiddleware(csrfProtection())
+        .addMiddleware(stripTrailingSlash());
 
     // Use custom logging middleware if verbose
     if (verbose) {
