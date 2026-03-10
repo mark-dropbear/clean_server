@@ -1,4 +1,3 @@
-import '../../data/mappers/report_mapper.dart';
 import '../entities/report.dart';
 import '../repositories/report_repository.dart';
 
@@ -10,33 +9,10 @@ class SubmitReports {
   /// Creates a [SubmitReports] instance.
   SubmitReports(this.reportRepository);
 
-  /// Processes and saves a list of report maps using pattern matching.
-  ///
-  /// Each map in [reportMaps] is expected to be a single report object
-  /// from the Reporting API JSON array.
-  Future<List<Report>> execute(
-    List<Map<String, dynamic>> reportMaps,
-  ) async {
-    final reports = <Report>[];
-    final receivedAt = DateTime.now().toUtc();
-
-    for (final map in reportMaps) {
-      final type = map['type'] as String?;
-      final report = switch (type) {
-        'deprecation' => DeprecationReportMapper.fromReportingApi(
-            map,
-            receivedAt: receivedAt,
-          ),
-        // Add other report types here as they are supported
-        _ => null,
-      };
-
-      if (report != null) {
-        await reportRepository.save(report);
-        reports.add(report);
-      }
+  /// Processes and saves a list of reports.
+  Future<void> execute(List<Report> reports) async {
+    for (final report in reports) {
+      await reportRepository.save(report);
     }
-
-    return reports;
   }
 }

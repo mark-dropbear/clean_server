@@ -34,8 +34,9 @@ class TaskListNotFoundException extends DomainException {
   TaskListNotFoundException(String id) : super('Task list not found: $id');
 }
 
-/// Thrown when feedback cannot be found.
-class FeedbackNotFoundException extends DomainException {
-  /// Creates a new [FeedbackNotFoundException].
-  FeedbackNotFoundException(String id) : super('Feedback not found: $id');
+/// Thrown when a browser report type is not supported.
+class UnsupportedReportException extends DomainException {
+  /// Creates a new [UnsupportedReportException].
+  UnsupportedReportException(String type)
+    : super('Unsupported report type: $type');
 }

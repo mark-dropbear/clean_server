@@ -1,9 +1,8 @@
-import 'package:clean_server/features/reporting/data/mappers/report_mapper.dart';
 import 'package:clean_server/features/reporting/domain/entities/deprecation_report.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('ReportMapper', () {
+  group('DeprecationReport Serialization', () {
     test('should map DeprecationReport to map and back', () {
       final now = DateTime.now().toUtc();
       final report = DeprecationReport(
@@ -20,7 +19,7 @@ void main() {
       );
 
       final map = report.toMap();
-      final fromMap = deprecationReportFromMap(map);
+      final fromMap = DeprecationReport.fromMap(map);
 
       expect(fromMap, equals(report));
       expect(fromMap.id, '123');
@@ -44,12 +43,42 @@ void main() {
       );
 
       final map = report.toMap();
-      final fromMap = deprecationReportFromMap(map);
+      final fromMap = DeprecationReport.fromMap(map);
 
       expect(fromMap, equals(report));
       expect(fromMap.sourceFile, isNull);
       expect(fromMap.lineNumber, isNull);
       expect(fromMap.anticipatedRemoval, isNull);
+    });
+
+    test('should map from browser JSON (Reporting API)', () {
+      final now = DateTime.now().toUtc();
+      final json = {
+        'type': 'deprecation',
+        'age': 420,
+        'url': 'http://localhost:8080/',
+        'user_agent': 'Mozilla/5.0...',
+        'body': {
+          'columnNumber': 976,
+          'id': 'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+          'lineNumber': 1,
+          'message': 'Some message',
+          'sourceFile': 'http://localhost:8080/frontend/src/index.js',
+        },
+      };
+
+      final report = DeprecationReport.fromJson(json, receivedAt: now);
+
+      expect(report.type, 'deprecation');
+      expect(report.age, 420);
+      expect(report.url, 'http://localhost:8080/');
+      expect(report.userAgent, 'Mozilla/5.0...');
+      expect(
+        report.featureId,
+        'XMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload',
+      );
+      expect(report.receivedAt, now);
+      expect(report.id, isNotEmpty);
     });
   });
 }

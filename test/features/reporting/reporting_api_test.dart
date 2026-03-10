@@ -22,31 +22,25 @@ void main() {
       await server.close(force: true);
     });
 
-    test(
-      'POST /_reports/default should succeed without CSRF token',
-      () async {
-        final reports = [
-          {
-            'type': 'deprecation',
-            'age': 0,
-            'url': 'http://localhost/demo',
-            'user_agent': 'Dart-Test',
-            'body': {
-              'id': 'TestFeature',
-              'message': 'Test deprecation message',
-            },
-          },
-        ];
+    test('POST /_reports/default should succeed without CSRF token', () async {
+      final reports = [
+        {
+          'type': 'deprecation',
+          'age': 0,
+          'url': 'http://localhost/demo',
+          'user_agent': 'Dart-Test',
+          'body': {'id': 'TestFeature', 'message': 'Test deprecation message'},
+        },
+      ];
 
-        final response = await http.post(
-          Uri.parse('$baseUrl/_reports/default'),
-          headers: {'Content-Type': 'application/reports+json'},
-          body: jsonEncode(reports),
-        );
+      final response = await http.post(
+        Uri.parse('$baseUrl/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
 
-        expect(response.statusCode, 204);
-      },
-    );
+      expect(response.statusCode, 204);
+    });
 
     test(
       'POST /_reports/default should fail with wrong Content-Type',

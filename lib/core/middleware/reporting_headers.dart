@@ -12,14 +12,8 @@ Middleware reportingHeaders() {
       // Only add the header to successful HTML responses
       final contentType = response.headers['content-type'] ?? '';
       if (response.statusCode == 200 && contentType.contains('text/html')) {
-        // Construct the absolute URL for the reporting endpoint.
-        // Browsers are more consistent with absolute URLs in this header.
-        final uri = request.requestedUri;
-        final origin = '${uri.scheme}://${uri.authority}';
-        final endpointUrl = '$origin/_reports/default';
-
         return response.change(
-          headers: {'Reporting-Endpoints': 'default="$endpointUrl"'},
+          headers: {'Reporting-Endpoints': 'default="/_reports/default"'},
         );
       }
 

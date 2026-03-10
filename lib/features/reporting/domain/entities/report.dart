@@ -1,4 +1,6 @@
 import 'package:meta/meta.dart';
+import '../../../../core/exceptions.dart';
+import 'deprecation_report.dart';
 
 /// Base class for all browser reports.
 @immutable
@@ -30,6 +32,21 @@ abstract class Report {
     required this.receivedAt,
     this.userAgent,
   });
+
+  /// Polymorphic factory to create a [Report] from a browser JSON payload.
+  factory Report.fromJson(
+    Map<String, dynamic> json, {
+    required DateTime receivedAt,
+  }) {
+    final type = json['type'] as String?;
+    return switch (type) {
+      'deprecation' => DeprecationReport.fromJson(json, receivedAt: receivedAt),
+      _ => throw UnsupportedReportException(type ?? 'unknown'),
+    };
+  }
+
+  /// Converts this [Report] to a [Map].
+  Map<String, dynamic> toMap();
 
   @override
   bool operator ==(Object other) =>

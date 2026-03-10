@@ -8,17 +8,14 @@ import 'package:shelf/shelf.dart';
 import 'package:test/test.dart';
 
 class MockSubmitReports implements SubmitReports {
-  List<Map<String, dynamic>>? lastReports;
+  List<Report>? lastReports;
 
   @override
   ReportRepository get reportRepository => throw UnimplementedError();
 
   @override
-  Future<List<Report>> execute(
-    List<Map<String, dynamic>> reportMaps,
-  ) async {
-    lastReports = reportMaps;
-    return [];
+  Future<void> execute(List<Report> reports) async {
+    lastReports = reports;
   }
 }
 
@@ -33,12 +30,12 @@ void main() {
     });
 
     test('should return 204 for valid reports', () async {
-      final reports = [
+      final reports = <Map<String, dynamic>>[
         {
           'type': 'deprecation',
           'age': 0,
           'url': 'x',
-          'body': <String, dynamic>{},
+          'body': <String, dynamic>{'id': 'feat', 'message': 'msg'},
         },
       ];
       final request = Request(
@@ -53,37 +50,37 @@ void main() {
       expect(response.statusCode, 204);
       expect(mockSubmit.lastReports, isNotNull);
       expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'deprecation');
     });
 
-    test('should return 400 for missing content-type', () async {
-      final request = Request(
-        'POST',
-        Uri.parse('http://localhost/_reports/default'),
-        body: '[]',
-      );
-
-      final response = await handler.handleDefault(request);
-
-      expect(response.statusCode, 400);
-      final body =
-          jsonDecode(await response.readAsString()) as Map<String, dynamic>;
-      expect(body['error'], contains('Expected application/reports+json'));
-    });
-
-    test('should return 400 for non-array body', () async {
+    test('should skip unsupported report types and still return 204', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'unsupported',
+          'age': 0,
+          'url': 'x',
+          'body': <String, dynamic>{},
+        },
+        {
+          'type': 'deprecation',
+          'age': 0,
+          'url': 'x',
+          'body': <String, dynamic>{'id': 'feat', 'message': 'msg'},
+        },
+      ];
       final request = Request(
         'POST',
         Uri.parse('http://localhost/_reports/default'),
         headers: {'Content-Type': 'application/reports+json'},
-        body: '{}',
+        body: jsonEncode(reports),
       );
 
       final response = await handler.handleDefault(request);
 
-      expect(response.statusCode, 400);
-      final body =
-          jsonDecode(await response.readAsString()) as Map<String, dynamic>;
-      expect(body['error'], contains('Expected a JSON array'));
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'deprecation');
     });
   });
 }

@@ -79,9 +79,7 @@ void setupLocator() {
   );
 
   // Reporting Use Cases
-  getIt.registerLazySingleton(
-    () => SubmitReports(getIt<ReportRepository>()),
-  );
+  getIt.registerLazySingleton(() => SubmitReports(getIt<ReportRepository>()));
 
   // Handlers
   getIt.registerLazySingleton(
@@ -114,8 +112,6 @@ void setupLocator() {
   );
 
   getIt.registerLazySingleton(
-    () => ReportHandler(
-      submitReports: getIt<SubmitReports>(),
-    ),
+    () => ReportHandler(submitReports: getIt<SubmitReports>()),
   );
 }
