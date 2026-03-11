@@ -1,6 +1,9 @@
 import 'package:meta/meta.dart';
 import '../../../../core/exceptions.dart';
+import 'crash_report.dart';
+import 'csp_violation_report.dart';
 import 'deprecation_report.dart';
+import 'intervention_report.dart';
 
 /// Base class for all browser reports.
 @immutable
@@ -41,6 +44,15 @@ abstract class Report {
     final type = json['type'] as String?;
     return switch (type) {
       'deprecation' => DeprecationReport.fromJson(json, receivedAt: receivedAt),
+      'intervention' => InterventionReport.fromJson(
+        json,
+        receivedAt: receivedAt,
+      ),
+      'crash' => CrashReport.fromJson(json, receivedAt: receivedAt),
+      'csp-violation' => CspViolationReport.fromJson(
+        json,
+        receivedAt: receivedAt,
+      ),
       _ => throw UnsupportedReportException(type ?? 'unknown'),
     };
   }

@@ -82,5 +82,52 @@ void main() {
       expect(mockSubmit.lastReports!.length, 1);
       expect(mockSubmit.lastReports!.first.type, 'deprecation');
     });
+    test('should return 204 for valid crash report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'crash',
+          'age': 100,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{'reason': 'oom'},
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'crash');
+    });
+
+    test('should return 204 for valid csp-violation report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'csp-violation',
+          'age': 50,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{'effectiveDirective': 'script-src'},
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'csp-violation');
+    });
   });
 }
