@@ -129,5 +129,29 @@ void main() {
       expect(mockSubmit.lastReports!.length, 1);
       expect(mockSubmit.lastReports!.first.type, 'csp-violation');
     });
+
+    test('should return 204 for valid integrity-violation report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'integrity-violation',
+          'age': 75,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{'blockedURL': 'https://example.com/lib.js'},
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'integrity-violation');
+    });
   });
 }

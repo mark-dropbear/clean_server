@@ -2,6 +2,7 @@ import 'package:clean_server/core/exceptions.dart';
 import 'package:clean_server/features/reporting/domain/entities/crash_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/csp_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/deprecation_report.dart';
+import 'package:clean_server/features/reporting/domain/entities/integrity_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/intervention_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/report.dart';
 import 'package:test/test.dart';
@@ -56,6 +57,18 @@ void main() {
       final report = Report.fromJson(json, receivedAt: now);
       expect(report, isA<CspViolationReport>());
       expect(report.type, 'csp-violation');
+    });
+
+    test('should create IntegrityViolationReport', () {
+      final json = {
+        'type': 'integrity-violation',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'blockedURL': 'http://test.com/script.js'},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<IntegrityViolationReport>());
+      expect(report.type, 'integrity-violation');
     });
 
     test('should throw UnsupportedReportException for unknown type', () {

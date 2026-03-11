@@ -3,6 +3,7 @@ import '../../../../core/exceptions.dart';
 import 'crash_report.dart';
 import 'csp_violation_report.dart';
 import 'deprecation_report.dart';
+import 'integrity_violation_report.dart';
 import 'intervention_report.dart';
 
 /// Base class for all browser reports.
@@ -50,6 +51,10 @@ abstract class Report {
       ),
       'crash' => CrashReport.fromJson(json, receivedAt: receivedAt),
       'csp-violation' => CspViolationReport.fromJson(
+        json,
+        receivedAt: receivedAt,
+      ),
+      'integrity-violation' => IntegrityViolationReport.fromJson(
         json,
         receivedAt: receivedAt,
       ),
