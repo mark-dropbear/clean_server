@@ -8,6 +8,7 @@ import 'deprecation_report.dart';
 import 'document_policy_violation_report.dart';
 import 'integrity_violation_report.dart';
 import 'intervention_report.dart';
+import 'permissions_policy_violation_report.dart';
 
 /// Base class for all browser reports.
 @immutable
@@ -67,6 +68,8 @@ abstract class Report {
         json,
         receivedAt: receivedAt,
       ),
+      'permissions-policy-violation' =>
+        PermissionsPolicyViolationReport.fromJson(json, receivedAt: receivedAt),
       _ => throw UnsupportedReportException(type ?? 'unknown'),
     };
   }

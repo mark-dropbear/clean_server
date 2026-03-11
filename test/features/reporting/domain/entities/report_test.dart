@@ -7,6 +7,7 @@ import 'package:clean_server/features/reporting/domain/entities/deprecation_repo
 import 'package:clean_server/features/reporting/domain/entities/document_policy_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/integrity_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/intervention_report.dart';
+import 'package:clean_server/features/reporting/domain/entities/permissions_policy_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/report.dart';
 import 'package:test/test.dart';
 
@@ -108,6 +109,18 @@ void main() {
       final report = Report.fromJson(json, receivedAt: now);
       expect(report, isA<DocumentPolicyViolationReport>());
       expect(report.type, 'document-policy-violation');
+    });
+
+    test('should create PermissionsPolicyViolationReport', () {
+      final json = {
+        'type': 'permissions-policy-violation',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'featureId': 'camera', 'disposition': 'enforce'},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<PermissionsPolicyViolationReport>());
+      expect(report.type, 'permissions-policy-violation');
     });
 
     test('should throw UnsupportedReportException for unknown type', () {
