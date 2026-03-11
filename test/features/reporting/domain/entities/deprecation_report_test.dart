@@ -3,8 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('DeprecationReport', () {
+    final now = DateTime.now();
+
     test('should correctly instantiate and preserve fields', () {
-      final now = DateTime.now();
       final report = DeprecationReport(
         id: '123',
         url: 'https://example.com',
@@ -23,8 +24,51 @@ void main() {
       expect(report.message, 'This feature is deprecated');
     });
 
+    test('should create from browser JSON (fromJson)', () {
+      final json = {
+        'type': 'deprecation',
+        'url': 'https://example.com',
+        'age': 100,
+        'body': {
+          'id': 'legacy-feature',
+          'message': 'This feature is deprecated',
+          'sourceFile': 'https://example.com/main.js',
+          'lineNumber': 10,
+          'columnNumber': 5,
+          'anticipatedRemoval': '2026-12-31',
+        },
+      };
+
+      final report = DeprecationReport.fromJson(json, receivedAt: now);
+
+      expect(report.type, 'deprecation');
+      expect(report.featureId, 'legacy-feature');
+      expect(report.message, 'This feature is deprecated');
+      expect(report.sourceFile, 'https://example.com/main.js');
+      expect(report.lineNumber, 10);
+      expect(report.columnNumber, 5);
+      expect(report.anticipatedRemoval, DateTime.parse('2026-12-31'));
+      expect(report.receivedAt, now);
+    });
+
+    test('should support serialization (toMap/fromMap)', () {
+      final original = DeprecationReport(
+        id: '123',
+        url: 'https://example.com',
+        age: 100,
+        receivedAt: DateTime.parse(now.toIso8601String()),
+        featureId: 'legacy-feature',
+        message: 'This feature is deprecated',
+      );
+
+      final map = original.toMap();
+      final fromMap = DeprecationReport.fromMap(map);
+
+      expect(fromMap, equals(original));
+      expect(fromMap.featureId, 'legacy-feature');
+    });
+
     test('should support equality', () {
-      final now = DateTime.now();
       final r1 = DeprecationReport(
         id: '1',
         url: 'x',

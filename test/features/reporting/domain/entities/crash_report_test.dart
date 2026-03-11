@@ -3,8 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   group('CrashReport', () {
+    final now = DateTime.now();
+
     test('should correctly instantiate and preserve fields', () {
-      final now = DateTime.now();
       final report = CrashReport(
         id: '456',
         url: 'https://example.com/app',
@@ -25,8 +26,47 @@ void main() {
       expect(report.isTopLevel, isTrue);
     });
 
+    test('should create from browser JSON (fromJson)', () {
+      final json = {
+        'type': 'crash',
+        'url': 'https://example.com/app',
+        'age': 2000,
+        'body': {
+          'reason': 'oom',
+          'stack': 'Error stack...',
+          'is_top_level': true,
+        },
+      };
+
+      final report = CrashReport.fromJson(json, receivedAt: now);
+
+      expect(report.type, 'crash');
+      expect(report.url, 'https://example.com/app');
+      expect(report.reason, 'oom');
+      expect(report.stack, 'Error stack...');
+      expect(report.isTopLevel, isTrue);
+      expect(report.receivedAt, now);
+    });
+
+    test('should support serialization (toMap/fromMap)', () {
+      final original = CrashReport(
+        id: '456',
+        url: 'https://example.com/app',
+        age: 2000,
+        receivedAt: DateTime.parse(now.toIso8601String()),
+        reason: 'oom',
+        stack: 'Error stack...',
+        isTopLevel: true,
+      );
+
+      final map = original.toMap();
+      final fromMap = CrashReport.fromMap(map);
+
+      expect(fromMap, equals(original));
+      expect(fromMap.reason, 'oom');
+    });
+
     test('should support equality', () {
-      final now = DateTime.now();
       final r1 = CrashReport(
         id: '1',
         url: 'x',
@@ -41,8 +81,16 @@ void main() {
         receivedAt: now,
         reason: 'r',
       );
+      final r3 = CrashReport(
+        id: '2',
+        url: 'x',
+        age: 1,
+        receivedAt: now,
+        reason: 'r',
+      );
 
       expect(r1, equals(r2));
+      expect(r1, isNot(equals(r3)));
       expect(r1.hashCode, equals(r2.hashCode));
     });
   });
