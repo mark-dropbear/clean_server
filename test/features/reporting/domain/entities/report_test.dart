@@ -7,6 +7,7 @@ import 'package:clean_server/features/reporting/domain/entities/deprecation_repo
 import 'package:clean_server/features/reporting/domain/entities/document_policy_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/integrity_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/intervention_report.dart';
+import 'package:clean_server/features/reporting/domain/entities/network_error_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/permissions_policy_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/report.dart';
 import 'package:test/test.dart';
@@ -121,6 +122,18 @@ void main() {
       final report = Report.fromJson(json, receivedAt: now);
       expect(report, isA<PermissionsPolicyViolationReport>());
       expect(report.type, 'permissions-policy-violation');
+    });
+
+    test('should create NetworkErrorReport', () {
+      final json = {
+        'type': 'network-error',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'type': 'http.error', 'status_code': 404},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<NetworkErrorReport>());
+      expect(report.type, 'network-error');
     });
 
     test('should throw UnsupportedReportException for unknown type', () {

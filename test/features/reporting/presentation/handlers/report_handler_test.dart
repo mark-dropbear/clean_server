@@ -269,5 +269,32 @@ void main() {
         );
       },
     );
+
+    test('should return 204 for valid network-error report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'network-error',
+          'age': 10,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{
+            'type': 'dns.name_not_resolved',
+            'phase': 'dns',
+          },
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'network-error');
+    });
   });
 }
