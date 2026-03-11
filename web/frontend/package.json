@@ -11,12 +11,14 @@
   },
   "scripts": {
     "build:dev": "jspm build -C development --integrity",
-    "build:prod": "jspm build -C production --integrity"
+    "build:prod": "jspm build -C production --integrity",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "lit": "^3.3.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.1",
     "jspm": "^4.4.0"
   }
 }

@@ -45,6 +45,7 @@ The project is organized using a **Feature-First** approach with layered concern
 - **`web/`**: Assets, templates, and frontend source code.
   - `templates/`: SSR Mustache templates.
   - `frontend/`: Lit components and frontend assets.
+    - `tests/e2e/`: End-to-end tests using **Playwright**.
 
 ## Building and Running
 
@@ -56,8 +57,9 @@ The project is organized using a **Feature-First** approach with layered concern
   - `cd web/frontend && npm install`
   - Development: `npm run build:dev`
   - Production: `npm run build:prod`
-- **Run Tests**: `dart test`
-  - To generate a coverage report: `dart test --coverage=coverage/`
+- **Run Tests**:
+  - **Dart (Unit/Integration)**: `dart test`
+  - **Frontend (E2E)**: `cd web/frontend && npm run test:e2e`
 - **Static Analysis**: `dart analyze`
 - **Format Code**: `dart format .`
 
@@ -73,7 +75,8 @@ The project is organized using a **Feature-First** approach with layered concern
 - **Organization**: Tests are organized by feature (e.g., `test/features/tasks/`) and then by layer (`domain`, `data`, `presentation`).
 - **In-Memory Dependencies**: Tests leverage real in-memory repository implementations instead of mocks for speed and reliability.
 - **Direct Handler Testing**: API handlers are tested by passing `shelf.Request` objects directly.
-- **Integration Tests**: Feature-level and app-level integration tests reside in their respective feature folders or the root of `test/`.
+- **Backend Integration Tests**: Feature-level and app-level integration tests reside in their respective feature folders or the root of `test/`.
+- **Frontend E2E Tests**: Playwright is used to verify full user flows across multiple pages, including verification of security headers (CSP/CSRF) and async Lit component rendering.
 
 ### JSON-LD Support
 - Entities support JSON-LD serialization via `toJsonLd()` extension methods mapping to Schema.org types (e.g., `ItemList`, `Action`, `Message`).
