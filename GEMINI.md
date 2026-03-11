@@ -24,11 +24,11 @@ The project is organized using a **Feature-First** approach with layered concern
   - **`lib/core/`**: Shared infrastructure logic.
     - `exceptions.dart`: Centralized domain exceptions.
     - `logging.dart`: Logger configuration.
-    - `view_renderer.dart`: Centralized template/partial resolution and rendering.
-    - **`lib/core/middleware/`**: Shared middleware logic (CSRF, URL normalization).
+    - `view_renderer.dart`: Centralized template/partial resolution and rendering. (Injects CSRF tokens and CSP nonces).
+    - **`lib/core/middleware/`**: Shared middleware logic (`csrf_protection.dart`, `csp_protection.dart`, `reporting_headers.dart`, `url_normalization.dart`).
     - **`lib/features/`**: Business functionality grouped by feature.
     - **`reporting/`**: Logic for browser reporting via the official Reporting API.
-      - `domain/`: `Report` and `DeprecationReport` entities, Use Case, and Repository interface.
+      - `domain/`: `Report` base class and a comprehensive suite of entities (e.g., `DeprecationReport`, `CrashReport`, `CspViolationReport`, `NetworkErrorReport`), Use Case, and Repository interface.
       - `data/`: In-memory Repository and Mapper.
       - `presentation/`: `ReportHandler`.
     - **`tasks/`**: Logic for managing tasks and task lists.
@@ -80,7 +80,9 @@ The project is organized using a **Feature-First** approach with layered concern
 
 ### Security
 - Mandatory HTML escaping in templates.
-- CSRF protection via Double Submit Cookie pattern.
+- **CSRF Protection**: Double Submit Cookie pattern (`csrf_protection.dart`).
+- **CSP Protection**: Nonce-based Strict Content Security Policy (`csp_protection.dart`). Nonces are injected into templates via `ViewRenderer`.
+- **Reporting & Monitoring**: Extensive use of the W3C Reporting API (`reporting_headers.dart`) to collect telemetry on CSP violations, Network Error Logging (NEL), Permissions Policy, and Document Policy violations without breaking functionality (using `-Report-Only` headers).
 
 ### Logging Strategy
 - Use `package:logging`.
