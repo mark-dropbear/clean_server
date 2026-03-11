@@ -4,6 +4,7 @@ import 'package:clean_server/features/reporting/domain/entities/coop_violation_r
 import 'package:clean_server/features/reporting/domain/entities/crash_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/csp_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/deprecation_report.dart';
+import 'package:clean_server/features/reporting/domain/entities/document_policy_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/integrity_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/intervention_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/report.dart';
@@ -95,6 +96,18 @@ void main() {
       final report = Report.fromJson(json, receivedAt: now);
       expect(report, isA<CoopViolationReport>());
       expect(report.type, 'coop');
+    });
+
+    test('should create DocumentPolicyViolationReport', () {
+      final json = {
+        'type': 'document-policy-violation',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'featureId': 'no-sync-xhr', 'disposition': 'enforce'},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<DocumentPolicyViolationReport>());
+      expect(report.type, 'document-policy-violation');
     });
 
     test('should throw UnsupportedReportException for unknown type', () {

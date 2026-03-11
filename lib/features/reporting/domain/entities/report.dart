@@ -5,6 +5,7 @@ import 'coop_violation_report.dart';
 import 'crash_report.dart';
 import 'csp_violation_report.dart';
 import 'deprecation_report.dart';
+import 'document_policy_violation_report.dart';
 import 'integrity_violation_report.dart';
 import 'intervention_report.dart';
 
@@ -62,6 +63,10 @@ abstract class Report {
       ),
       'coep' => CoepViolationReport.fromJson(json, receivedAt: receivedAt),
       'coop' => CoopViolationReport.fromJson(json, receivedAt: receivedAt),
+      'document-policy-violation' => DocumentPolicyViolationReport.fromJson(
+        json,
+        receivedAt: receivedAt,
+      ),
       _ => throw UnsupportedReportException(type ?? 'unknown'),
     };
   }
