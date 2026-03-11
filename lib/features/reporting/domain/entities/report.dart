@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 import '../../../../core/exceptions.dart';
+import 'coep_violation_report.dart';
+import 'coop_violation_report.dart';
 import 'crash_report.dart';
 import 'csp_violation_report.dart';
 import 'deprecation_report.dart';
@@ -58,6 +60,8 @@ abstract class Report {
         json,
         receivedAt: receivedAt,
       ),
+      'coep' => CoepViolationReport.fromJson(json, receivedAt: receivedAt),
+      'coop' => CoopViolationReport.fromJson(json, receivedAt: receivedAt),
       _ => throw UnsupportedReportException(type ?? 'unknown'),
     };
   }

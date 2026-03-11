@@ -153,5 +153,58 @@ void main() {
       expect(mockSubmit.lastReports!.length, 1);
       expect(mockSubmit.lastReports!.first.type, 'integrity-violation');
     });
+
+    test('should return 204 for valid coep report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'coep',
+          'age': 30,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{
+            'type': 'corp',
+            'blockedURL': 'https://other.com/i.png',
+          },
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'coep');
+    });
+
+    test('should return 204 for valid coop report', () async {
+      final reports = <Map<String, dynamic>>[
+        {
+          'type': 'coop',
+          'age': 40,
+          'url': 'https://example.com',
+          'body': <String, dynamic>{
+            'violation': 'access-from-coop-page-to-other',
+          },
+        },
+      ];
+      final request = Request(
+        'POST',
+        Uri.parse('http://localhost/_reports/default'),
+        headers: {'Content-Type': 'application/reports+json'},
+        body: jsonEncode(reports),
+      );
+
+      final response = await handler.handleDefault(request);
+
+      expect(response.statusCode, 204);
+      expect(mockSubmit.lastReports, isNotNull);
+      expect(mockSubmit.lastReports!.length, 1);
+      expect(mockSubmit.lastReports!.first.type, 'coop');
+    });
   });
 }

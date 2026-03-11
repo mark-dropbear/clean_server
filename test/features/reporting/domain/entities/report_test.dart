@@ -1,4 +1,6 @@
 import 'package:clean_server/core/exceptions.dart';
+import 'package:clean_server/features/reporting/domain/entities/coep_violation_report.dart';
+import 'package:clean_server/features/reporting/domain/entities/coop_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/crash_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/csp_violation_report.dart';
 import 'package:clean_server/features/reporting/domain/entities/deprecation_report.dart';
@@ -69,6 +71,30 @@ void main() {
       final report = Report.fromJson(json, receivedAt: now);
       expect(report, isA<IntegrityViolationReport>());
       expect(report.type, 'integrity-violation');
+    });
+
+    test('should create CoepViolationReport', () {
+      final json = {
+        'type': 'coep',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'type': 'corp', 'blockedURL': 'http://test.com/img.png'},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<CoepViolationReport>());
+      expect(report.type, 'coep');
+    });
+
+    test('should create CoopViolationReport', () {
+      final json = {
+        'type': 'coop',
+        'url': 'http://test.com',
+        'age': 0,
+        'body': {'violation': 'access-to-coop-page-from-other'},
+      };
+      final report = Report.fromJson(json, receivedAt: now);
+      expect(report, isA<CoopViolationReport>());
+      expect(report.type, 'coop');
     });
 
     test('should throw UnsupportedReportException for unknown type', () {
