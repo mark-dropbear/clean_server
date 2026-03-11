@@ -36,7 +36,7 @@ void main() {
         );
         expect(
           response.headers['Content-Security-Policy-Report-Only'],
-          contains("report-to default"),
+          contains('report-to default'),
         );
       },
     );

@@ -33,7 +33,7 @@ Middleware reportingHeaders() {
           'group': 'default',
           'max_age': 2592000,
           'endpoints': [
-            {'url': '/_reports/default'}
+            {'url': '/_reports/default'},
           ],
         });
 
