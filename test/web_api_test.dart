@@ -64,11 +64,19 @@ void main() {
       expect(response.headers['content-type'], anyOf(contains('javascript')));
     });
 
-    test('ImportMap is present in HTML', () async {
+    test('ImportMap is present in HTML with nonce', () async {
       final response = await http.get(Uri.parse('$baseUrl/'));
       expect(
         response.body,
-        contains('<script src="/frontend/importmap.js"></script>'),
+        contains('<script src="/frontend/importmap.js" nonce="'),
+      );
+    });
+
+    test('CSP-Report-Only header is present', () async {
+      final response = await http.get(Uri.parse('$baseUrl/'));
+      expect(
+        response.headers['content-security-policy-report-only'],
+        contains("script-src 'nonce-"),
       );
     });
 

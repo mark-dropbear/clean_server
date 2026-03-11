@@ -6,7 +6,7 @@
     <title>Lit Component Demo</title>
     {{> csrf }}
     {{> importmap}}
-    <script type="module">
+    <script type="module" nonce="{{cspNonce}}">
         import 'frontend';
         import 'frontend/pages/demo.js';
     </script>
@@ -25,7 +25,7 @@
           <p>This page demonstrates client-side rendering of a task list using <strong>Lit</strong> components and <strong>JSON-LD</strong> metadata.</p>
             
           <task-list>
-            <script type="application/ld+json">
+            <script type="application/ld+json" nonce="{{cspNonce}}">
               {{{jsonLd}}}
             </script>
           </task-list>

@@ -5,6 +5,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 
 import 'app_router.dart';
+import 'core/middleware/csp_protection.dart';
 import 'core/middleware/csrf_protection.dart';
 import 'core/middleware/reporting_headers.dart';
 import 'core/middleware/url_normalization.dart';
@@ -45,6 +46,7 @@ class App {
     // 3. Configure the middleware and handler
     var pipeline = const Pipeline()
         .addMiddleware(csrfProtection())
+        .addMiddleware(cspProtection())
         .addMiddleware(reportingHeaders())
         .addMiddleware(stripTrailingSlash());
 

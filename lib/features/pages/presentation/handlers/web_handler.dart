@@ -24,9 +24,11 @@ class WebHandler {
 
     try {
       final csrfToken = request.context['csrfToken'] as String?;
+      final cspNonce = request.context['cspNonce'] as String?;
       final output = await _renderer.render('home', {
         'name': name,
         'csrfToken': csrfToken,
+        'cspNonce': cspNonce,
       });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {
@@ -36,8 +38,10 @@ class WebHandler {
         st,
       );
       try {
+        final cspNonce = request.context['cspNonce'] as String?;
         final errorOutput = await _renderer.render('error_500', {
           'message': e.toString(),
+          'cspNonce': cspNonce,
         });
         return Response.internalServerError(
           body: errorOutput,
@@ -59,8 +63,10 @@ class WebHandler {
 
     try {
       final csrfToken = request.context['csrfToken'] as String?;
+      final cspNonce = request.context['cspNonce'] as String?;
       final output = await _renderer.render('contact', {
         'csrfToken': csrfToken,
+        'cspNonce': cspNonce,
       });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {
@@ -105,9 +111,11 @@ class WebHandler {
 
     try {
       final csrfToken = request.context['csrfToken'] as String?;
+      final cspNonce = request.context['cspNonce'] as String?;
       final output = await _renderer.render('demo', {
         'jsonLd': jsonLd,
         'csrfToken': csrfToken,
+        'cspNonce': cspNonce,
       });
       return Response.ok(output, headers: {'Content-Type': 'text/html'});
     } on Exception catch (e, st) {

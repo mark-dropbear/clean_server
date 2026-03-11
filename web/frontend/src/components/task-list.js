@@ -40,7 +40,7 @@ export class TaskList extends LitElement {
   render() {
     return html`
       <div class="container">
-        <slot style="display:none"></slot>
+        <slot></slot>
         <div class="list-header">
           <h2>${this._listInfo.name}</h2>
           ${this._listInfo.description ? 
