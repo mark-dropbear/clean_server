@@ -25,7 +25,7 @@ The project is organized using a **Feature-First** approach with layered concern
     - `exceptions.dart`: Centralized domain exceptions.
     - `logging.dart`: Logger configuration.
     - `view_renderer.dart`: Centralized template/partial resolution and rendering. (Injects CSRF tokens and CSP nonces).
-    - **`lib/core/middleware/`**: Shared middleware logic (`csrf_protection.dart`, `csp_protection.dart`, `reporting_headers.dart`, `url_normalization.dart`).
+    - **`lib/core/middleware/`**: Shared middleware logic (`brotli_compression.dart`, `csrf_protection.dart`, `csp_protection.dart`, `reporting_headers.dart`, `url_normalization.dart`).
     - **`lib/features/`**: Business functionality grouped by feature.
     - **`reporting/`**: Logic for browser reporting via the official Reporting API.
       - `domain/`: `Report` base class and a comprehensive suite of entities (e.g., `DeprecationReport`, `CrashReport`, `CspViolationReport`, `NetworkErrorReport`), Use Case, and Repository interface.
