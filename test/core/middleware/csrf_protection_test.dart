@@ -13,17 +13,21 @@ void main() {
           .addHandler((request) => Response.ok('OK'));
     });
 
-    test('GET request should set XSRF-TOKEN cookie if missing', () async {
-      final request = Request('GET', Uri.parse('http://localhost/'));
-      final response = await handler(request);
+    test(
+      'GET request should set XSRF-TOKEN cookie and Vary: Cookie if missing',
+      () async {
+        final request = Request('GET', Uri.parse('http://localhost/'));
+        final response = await handler(request);
 
-      expect(response.statusCode, equals(200));
-      expect(response.headers['Set-Cookie'], contains('XSRF-TOKEN='));
-      expect(response.headers['Set-Cookie'], contains('SameSite=Lax'));
-    });
+        expect(response.statusCode, equals(200));
+        expect(response.headers['Set-Cookie'], contains('XSRF-TOKEN='));
+        expect(response.headers['Set-Cookie'], contains('SameSite=Lax'));
+        expect(response.headers['Vary'], contains('Cookie'));
+      },
+    );
 
     test(
-      'GET request should NOT set XSRF-TOKEN cookie if already present',
+      'GET request should add Vary: Cookie even if XSRF-TOKEN cookie is already present',
       () async {
         final request = Request(
           'GET',
@@ -34,6 +38,7 @@ void main() {
 
         expect(response.statusCode, equals(200));
         expect(response.headers.containsKey('Set-Cookie'), isFalse);
+        expect(response.headers['Vary'], contains('Cookie'));
       },
     );
 
@@ -82,6 +87,7 @@ void main() {
 
       expect(response.statusCode, equals(200));
       expect(await response.readAsString(), equals('OK'));
+      expect(response.headers['Vary'], contains('Cookie'));
     });
   });
 }

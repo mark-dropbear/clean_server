@@ -44,9 +44,7 @@ Middleware brotliCompression({
         return response.change(body: bodyBytes);
       }
 
-      final encoder = BrotliEncoder(
-        quality: brotliQuality,
-      );
+      final encoder = BrotliEncoder(quality: brotliQuality);
 
       final compressedBytes = encoder.convert(bodyBytes);
       final compressedLength = compressedBytes.length;
@@ -56,6 +54,15 @@ Middleware brotliCompression({
       final headers = Map<String, String>.from(response.headers);
       headers[HttpHeaders.contentEncodingHeader] = 'br';
       headers[HttpHeaders.contentLengthHeader] = compressedLength.toString();
+
+      // Add Vary: Accept-Encoding to let caches know the response depends on it.
+      final existingVary = headers[HttpHeaders.varyHeader];
+      if (existingVary == null) {
+        headers[HttpHeaders.varyHeader] = HttpHeaders.acceptEncodingHeader;
+      } else if (!existingVary.contains(HttpHeaders.acceptEncodingHeader)) {
+        headers[HttpHeaders.varyHeader] =
+            '$existingVary, ${HttpHeaders.acceptEncodingHeader}';
+      }
 
       if (addCompressionRatioHeader) {
         final ratio = (compressedLength / originalLength).toStringAsFixed(2);
@@ -68,14 +75,12 @@ Middleware brotliCompression({
         final timing = 'br;dur=$duration';
         const serverTimingHeader = 'server-timing';
         final existingTiming = headers[serverTimingHeader];
-        headers[serverTimingHeader] =
-            existingTiming == null ? timing : '$existingTiming, $timing';
+        headers[serverTimingHeader] = existingTiming == null
+            ? timing
+            : '$existingTiming, $timing';
       }
 
-      return response.change(
-        headers: headers,
-        body: compressedBytes,
-      );
+      return response.change(headers: headers, body: compressedBytes);
     };
   };
 }

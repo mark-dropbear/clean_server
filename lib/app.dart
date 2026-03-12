@@ -9,6 +9,7 @@ import 'core/middleware/brotli_compression.dart';
 import 'core/middleware/csp_protection.dart';
 import 'core/middleware/csrf_protection.dart';
 import 'core/middleware/reporting_headers.dart';
+import 'core/middleware/security_headers.dart';
 import 'core/middleware/url_normalization.dart';
 import 'di/service_locator.dart';
 import 'features/feedback/presentation/handlers/feedback_handler.dart';
@@ -47,6 +48,7 @@ class App {
     // 3. Configure the middleware and handler
     var pipeline = const Pipeline()
         .addMiddleware(brotliCompression())
+        .addMiddleware(securityHeaders())
         .addMiddleware(csrfProtection())
         .addMiddleware(cspProtection())
         .addMiddleware(reportingHeaders())
@@ -60,7 +62,12 @@ class App {
     final handler = pipeline.addHandler(router.call);
 
     // 4. Start the server
-    final server = await serve(handler, InternetAddress.anyIPv4, port);
+    final server = await serve(
+      handler,
+      InternetAddress.anyIPv4,
+      port,
+      poweredByHeader: null,
+    );
     _logger.info('Server listening on port ${server.port}');
     return server;
   }

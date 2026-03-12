@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:shelf/shelf.dart';
 
@@ -52,16 +53,25 @@ Middleware csrfProtection() {
       // 5. Proceed to the inner handler
       var response = await innerHandler(updatedRequest);
 
-      // 6. Add the Set-Cookie header if it's a new token
+      // 6. Add Vary: Cookie if it wasn't already there
+      final existingVary = response.headers[HttpHeaders.varyHeader];
+      final newHeaders = <String, String>{};
+      if (existingVary == null) {
+        newHeaders[HttpHeaders.varyHeader] = 'Cookie';
+      } else if (!existingVary.contains('Cookie')) {
+        newHeaders[HttpHeaders.varyHeader] = '$existingVary, Cookie';
+      }
+
+      // 7. Add the Set-Cookie header if it's a new token
       if (isNewToken) {
         // We can now use HttpOnly=true since the frontend will get the
         // token via a template attribute instead of reading document.cookie.
-        response = response.change(
-          headers: {
-            'Set-Cookie':
-                'XSRF-TOKEN=$token; Path=/; SameSite=Lax; Secure; HttpOnly',
-          },
-        );
+        newHeaders['Set-Cookie'] =
+            'XSRF-TOKEN=$token; Path=/; SameSite=Lax; Secure; HttpOnly';
+      }
+
+      if (newHeaders.isNotEmpty) {
+        response = response.change(headers: newHeaders);
       }
 
       return response;

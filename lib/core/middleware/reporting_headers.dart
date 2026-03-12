@@ -9,6 +9,8 @@ import 'package:shelf/shelf.dart';
 /// - 'Report-To': Legacy destination for older browsers/NEL.
 /// - 'Permissions-Policy-Report-Only': Opt-in for permission violation reports.
 /// - 'Document-Policy-Report-Only': Opt-in for document policy reports.
+/// - 'Cross-Origin-Opener-Policy-Report-Only': Detect COOP violations.
+/// - 'Cross-Origin-Embedder-Policy-Report-Only': Detect COEP violations.
 Middleware reportingHeaders() {
   return (Handler innerHandler) {
     return (Request request) async {
@@ -38,10 +40,10 @@ Middleware reportingHeaders() {
         });
 
         // 4. Feature opt-ins (Structured Headers syntax)
-        // Permissions-Policy uses commas to separate features and parentheses for values.
         const permissions = 'geolocation=(self), camera=()';
-        // Document-Policy uses ?0 for false and ?1 for true.
         const document = 'sync-xhr=?0;report-to=default';
+        const coop = 'same-origin; report-to="default"';
+        const coep = 'require-corp; report-to="default"';
 
         return response.change(
           headers: {
@@ -50,6 +52,8 @@ Middleware reportingHeaders() {
             'Report-To': reportTo,
             'Permissions-Policy-Report-Only': permissions,
             'Document-Policy-Report-Only': document,
+            'Cross-Origin-Opener-Policy-Report-Only': coop,
+            'Cross-Origin-Embedder-Policy-Report-Only': coep,
           },
         );
       }

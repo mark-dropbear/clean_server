@@ -38,7 +38,12 @@ Middleware cspProtection() {
         ].join('; ');
 
         return response.change(
-          headers: {'Content-Security-Policy-Report-Only': policy},
+          headers: {
+            'Content-Security-Policy-Report-Only': policy,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache', // For HTTP/1.0 compatibility
+            'Expires': '0', // Proxies
+          },
         );
       }
 

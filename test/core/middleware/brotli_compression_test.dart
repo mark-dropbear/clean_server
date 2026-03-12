@@ -11,39 +11,63 @@ void main() {
       final handler = const Pipeline()
           .addMiddleware(brotliCompression())
           .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {'content-type': 'text/plain'});
-      });
+            return Response.ok(
+              'a' * 1000,
+              headers: {'content-type': 'text/plain'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/')));
+      final response = await handler(
+        Request('GET', Uri.parse('http://localhost/')),
+      );
       expect(response.headers[HttpHeaders.contentEncodingHeader], isNull);
       expect(await response.readAsString(), 'a' * 1000);
     });
 
-    test('does not compress if response already has content-encoding', () async {
-      final handler = const Pipeline()
-          .addMiddleware(brotliCompression())
-          .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {
-          HttpHeaders.contentEncodingHeader: 'gzip',
-          HttpHeaders.contentTypeHeader: 'text/plain',
-        });
-      });
+    test(
+      'does not compress if response already has content-encoding',
+      () async {
+        final handler = const Pipeline()
+            .addMiddleware(brotliCompression())
+            .addHandler((request) {
+              return Response.ok(
+                'a' * 1000,
+                headers: {
+                  HttpHeaders.contentEncodingHeader: 'gzip',
+                  HttpHeaders.contentTypeHeader: 'text/plain',
+                },
+              );
+            });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
-      expect(response.headers[HttpHeaders.contentEncodingHeader], 'gzip');
-      expect(await response.readAsString(), 'a' * 1000);
-    });
+        final response = await handler(
+          Request(
+            'GET',
+            Uri.parse('http://localhost/'),
+            headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+          ),
+        );
+        expect(response.headers[HttpHeaders.contentEncodingHeader], 'gzip');
+        expect(await response.readAsString(), 'a' * 1000);
+      },
+    );
 
     test('does not compress if body is too small', () async {
       final handler = const Pipeline()
-          .addMiddleware(brotliCompression(minimalBrotliContentLength: 512))
+          .addMiddleware(brotliCompression(minimalBrotliContentLength: 256))
           .addHandler((request) {
-        return Response.ok('a' * 100, headers: {'content-type': 'text/plain'});
-      });
+            return Response.ok(
+              'a' * 100,
+              headers: {'content-type': 'text/plain'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
       expect(response.headers[HttpHeaders.contentEncodingHeader], isNull);
       expect(await response.readAsString(), 'a' * 100);
     });
@@ -53,20 +77,32 @@ void main() {
       final handler = const Pipeline()
           .addMiddleware(brotliCompression())
           .addHandler((request) {
-        return Response.ok(content, headers: {'content-type': 'text/plain'});
-      });
+            return Response.ok(
+              content,
+              headers: {'content-type': 'text/plain'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
 
       expect(response.headers[HttpHeaders.contentEncodingHeader], 'br');
       expect(response.headers[HttpHeaders.contentLengthHeader], isNotNull);
-      
+      expect(
+        response.headers[HttpHeaders.varyHeader],
+        contains(HttpHeaders.acceptEncodingHeader),
+      );
+
       final bodyBytes = await response.read().fold<List<int>>(
-            <int>[],
-            (previous, element) => previous..addAll(element),
-          );
-      
+        <int>[],
+        (previous, element) => previous..addAll(element),
+      );
+
       final decompressed = const BrotliDecoder().convert(bodyBytes);
       expect(String.fromCharCodes(decompressed), content);
     });
@@ -75,11 +111,19 @@ void main() {
       final handler = const Pipeline()
           .addMiddleware(brotliCompression())
           .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {'content-type': 'text/plain'});
-      });
+            return Response.ok(
+              'a' * 1000,
+              headers: {'content-type': 'text/plain'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
 
       expect(response.headers['x-compression-ratio'], isNotNull);
     });
@@ -88,11 +132,19 @@ void main() {
       final handler = const Pipeline()
           .addMiddleware(brotliCompression(addServerTiming: true))
           .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {'content-type': 'text/plain'});
-      });
+            return Response.ok(
+              'a' * 1000,
+              headers: {'content-type': 'text/plain'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
 
       expect(response.headers['server-timing'], contains('br;dur='));
     });
@@ -101,26 +153,44 @@ void main() {
       final handler = const Pipeline()
           .addMiddleware(brotliCompression())
           .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {'content-type': 'image/png'});
-      });
+            return Response.ok(
+              'a' * 1000,
+              headers: {'content-type': 'image/png'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
 
       expect(response.headers[HttpHeaders.contentEncodingHeader], isNull);
     });
 
     test('respects custom alreadyCompressedContentType callback', () async {
       final handler = const Pipeline()
-          .addMiddleware(brotliCompression(
-            alreadyCompressedContentType: (type) => type == 'text/custom',
-          ))
+          .addMiddleware(
+            brotliCompression(
+              alreadyCompressedContentType: (type) => type == 'text/custom',
+            ),
+          )
           .addHandler((request) {
-        return Response.ok('a' * 1000, headers: {'content-type': 'text/custom'});
-      });
+            return Response.ok(
+              'a' * 1000,
+              headers: {'content-type': 'text/custom'},
+            );
+          });
 
-      final response = await handler(Request('GET', Uri.parse('http://localhost/'),
-          headers: {HttpHeaders.acceptEncodingHeader: 'br'}));
+      final response = await handler(
+        Request(
+          'GET',
+          Uri.parse('http://localhost/'),
+          headers: {HttpHeaders.acceptEncodingHeader: 'br'},
+        ),
+      );
 
       expect(response.headers[HttpHeaders.contentEncodingHeader], isNull);
     });

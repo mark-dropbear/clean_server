@@ -17,7 +17,7 @@ void main() {
     });
 
     test(
-      'should add CSP-Report-Only header to successful HTML responses',
+      'should add CSP-Report-Only and Cache-Control headers to successful HTML responses',
       () async {
         final handler = cspProtection()((request) {
           return Response.ok(
@@ -38,6 +38,11 @@ void main() {
           response.headers['Content-Security-Policy-Report-Only'],
           contains('report-to default'),
         );
+        expect(
+          response.headers['Cache-Control'],
+          'no-cache, no-store, must-revalidate',
+        );
+        expect(response.headers['Pragma'], 'no-cache');
       },
     );
 
